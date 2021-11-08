@@ -1,16 +1,23 @@
-import { Refine } from "@pankod/refine";
+import { Refine, Resource } from "@pankod/refine";
 
 import "@pankod/refine/dist/styles.min.css";
 import { DataProvider } from "@pankod/refine-strapi";
 import strapiAuthProvider from "authProvider";
 import { useTranslation } from "react-i18next";
 import { Header } from "components";
-
+import { PostList } from "./pages/driver";
+import { VehicleList } from "./pages/vehicle";
+import { UserList } from "./pages/user";
+import { Bluetooth } from "./pages/bluetooth";
+import { BookingList } from "./pages/booking";
+import { AuthenticatedCustomPage } from "./pages/dashboard";
+import { CustomMenu } from "./components/menu";
+import { Login } from "pages/login";
 function App() {
   const { t, i18n } = useTranslation();
-  const API_URL = "your-strapi-api-url";
+  const API_URL = "https://survey.powermap.live";
 
-  const { authProvider, axiosInstance } = strapiAuthProvider(API_URL);
+  const { authProvider, axiosInstance } = strapiAuthProvider("https://survey.powermap.live");
   const dataProvider = DataProvider(API_URL, axiosInstance);
 
   const i18nProvider = {
@@ -21,11 +28,32 @@ function App() {
 
   return (
     <Refine
+    LoginPage={Login}
       dataProvider={dataProvider}
       authProvider={authProvider}
       i18nProvider={i18nProvider}
-      Header={Header}
-    ></Refine>
+      Title={({ collapsed }) => (
+        <div style={{ marginTop: 12, textAlign: "center", color: 'white', width: '100%' }}>
+          {/* {collapsed && <img src="./images/AapicoIcon.png" alt="Logo" />} */}
+          {<img src="./images/AapicoIcon.png" alt="Logo" />}
+          {/* <span>TEST</span> */}
+        </div>
+      )}
+      // Header={Header}
+      Sider={CustomMenu}
+      routes={[
+        {
+          exact: true,
+          component: AuthenticatedCustomPage,
+          path: "/dashboard",
+        },
+      ]}
+    >
+      <Resource icon={<img src='/images/icon/driver.png' />} name="drivers" list={PostList} options={{ label: "รายการผู้ขับ" }} />
+      <Resource  icon={<img src='/images/icon/car.png' />} name="vehicles" list={VehicleList} options={{ label: "รายการรถ" }} />
+      <Resource  icon={<img src='/images/icon/user.png' />} name="users" list={UserList} options={{ label: "รายการผู้ใช้งาน" }} />
+      <Resource  name="bluetooths" list={Bluetooth} options={{ label: "รายการบลูทูธ" }} />
+    </Refine>
   );
 }
 

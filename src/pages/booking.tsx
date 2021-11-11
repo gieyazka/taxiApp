@@ -16,7 +16,6 @@ interface IPost {
 export const BookingList: React.FC = (props) => {
 
     const { tableProps,searchFormProps  } = useTable<IPost>();
-    console.log(tableProps);
 
     return (
         <React.Fragment>

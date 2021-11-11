@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/charts": "^1.2.14",
     "@ant-design/icons": "^4.7.0",
     "@pankod/refine": "^1.0.76",
     "@pankod/refine-strapi": "^0.1.0",

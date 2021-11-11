@@ -2,10 +2,13 @@
 
 import { Typography, Row, Col, Refine, useApiUrl, Authenticated, AuthProvider, LayoutWrapper, useSelect } from "@pankod/refine";
 import React from 'react'
+import {
+    DailyOrders
 
+} from "components/report";
 const Dashboard = () => {
     const apiUrl = useApiUrl();
-    const { Text } = Typography
+    const { Text, Title } = Typography
     const [driverState, setDriverState] = React.useState<{ approve: number, block: number }>()
     const [carState, setCarState] = React.useState<{ approve: number, block: number }>()
     React.useEffect(() => {
@@ -24,27 +27,32 @@ const Dashboard = () => {
                 setCarState({ approve: countApprove, block: countBlock })
             });
     }, [])
-    console.log(driverState);
 
     return (
         <div style={{}}>
             <Row gutter={[0, 24]}>
                 <Col span={8}>
                     {/* <div  style={{textAlign : 'center'}}> */}
-                    <div style={{ marginLeft: "auto", marginRight: 'auto', borderRadius: 20, padding: 24, backgroundColor: '#A7F3D0', width: '25vw' }}>
-                        <Text style={{ fontSize: '1.5em' }}>รายการผู้ขับรถ</Text> <br />
-                        <Text style={{ fontSize: '2em', textAlign: 'left' }}>{driverState?.approve}</Text>
+                    <div style={{ backgroundPosition : '120% 50%',backgroundRepeat : 'no-repeat',backgroundImage : 'url("/images/driver1.png")',backgroundSize : '10vw',display: 'flex',justifyContent : 'space-between', marginLeft: "auto", marginRight: 'auto', borderRadius: 20, padding: 24, backgroundColor: '#A7F3D0', width: '25vw' }}>
+                       
+                        <div>
+
+                            <Text style={{ fontSize: '1.5em' }}>รายการผู้ขับรถ</Text> <br />
+                            <Text style={{ fontSize: '2em', textAlign: 'left' }}>{driverState?.approve}</Text>
+                        </div>
+                        {/* <img style={{ width:  '10vw',opacity : 0.5 }} src='/images/driver1.png' /> */}
+
                     </div>
                     {/* </div> */}
                 </Col>
                 <Col span={8}>
-                    <div style={{ marginLeft: "auto", marginRight: 'auto', borderRadius: 20, padding: 24, backgroundColor: '#BFDBFE', width: '25vw' }}>
+                    <div style={{ backgroundPosition : '120% 50%',backgroundRepeat : 'no-repeat',backgroundImage : 'url("/images/taxi.png")',backgroundSize : '12vw', marginLeft: "auto", marginRight: 'auto', borderRadius: 20, padding: 24, backgroundColor: '#BFDBFE', width: '25vw' }}>
                         <Text style={{ fontSize: '1.5em' }}>รายการรถ</Text> <br />
                         <Text style={{ fontSize: '2em', textAlign: 'left' }}>{carState?.approve}</Text>
                     </div>
                 </Col>
                 <Col span={8}>
-                    <div style={{ marginLeft: "auto", marginRight: 'auto', borderRadius: 20, padding: 24, backgroundColor: '#C7D2FE', width: '25vw' }}>
+                    <div style={{ backgroundPosition : '120% 50%',backgroundRepeat : 'no-repeat',backgroundImage : 'url("/images/userDashboard.png")',backgroundSize : '12vw',marginLeft: "auto", marginRight: 'auto', borderRadius: 20, padding: 24, backgroundColor: '#C7D2FE', width: '25vw' }}>
                         <Text style={{ fontSize: '1.5em' }}>รายการผู้ใช้งาน</Text> <br />
                         <Text style={{ fontSize: '2em', textAlign: 'left' }}>{driverState?.approve}</Text>
                     </div>

@@ -33,9 +33,9 @@ function App() {
       authProvider={authProvider}
       i18nProvider={i18nProvider}
       Title={({ collapsed }) => (
-        <div style={{ marginTop: 12, textAlign: "center", color: 'white', width: '100%' }}>
+        <div style={{ backgroundColor : '#007EFF',paddingTop : 12,paddingBottom  : 12, textAlign: "center", color: 'white', width: '100%' }}>
           {/* {collapsed && <img src="./images/AapicoIcon.png" alt="Logo" />} */}
-          {<img src="./images/AapicoIcon.png" alt="Logo" />}
+          {<img style={{width :  '48px'}} src="./images/aapicoLogo.png" alt="Logo" />}
           {/* <span>TEST</span> */}
         </div>
       )}

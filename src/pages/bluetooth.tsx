@@ -21,9 +21,11 @@ export const Bluetooth: React.FC = (props) => {
 
             const filters: CrudFilters = [];
             const { name } = params;
+            console.log(name);
+            
             filters.push(
                 {
-                    field: "name",
+                    field: "plate",
                     operator: "eq",
                     value: name,
                 },
@@ -86,7 +88,7 @@ export const Bluetooth: React.FC = (props) => {
                     <Form layout="vertical" {...searchFormProps}>
                         <Form.Item label="Search" name="name">
                             <Input
-                                placeholder="name"
+                                placeholder="ทะเบียนรถ"
                                 prefix={<Icons.SearchOutlined />}
                             />
                         </Form.Item>

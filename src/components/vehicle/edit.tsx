@@ -18,8 +18,11 @@ import {
     getValueFromEvent,
     useApiUrl,
     useSelect,
+    useUpdate, useCreate
 } from "@pankod/refine";
 import React from 'react'
+import axios from 'axios'
+import moment from 'moment'
 const { Text } = Typography;
 interface DataType {
     key: React.Key;
@@ -34,15 +37,17 @@ type EditVehicleProps = {
     drawerProps: DrawerProps;
     formProps: FormProps;
     saveButtonProps: ButtonProps;
+    close: () => void
 };
-
 export const EditVehicle: React.FC<EditVehicleProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
-
+    close
 }) => {
+    const update = useUpdate<any>();
 
+    const create = useCreate<any>();
     const t = useTranslate();
     const apiUrl = useApiUrl();
     const breakpoint = Grid.useBreakpoint();
@@ -86,6 +91,55 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
         resource: "drivers",
     });
     const [state, setState] = React.useState({ loading: false, imageUrl: null })
+    const onFinish: any = async (newData: { cancle_date?: string, update_log: {}[]; tel: string, name: string; lastname: string; picture: [{}]; status: string; driver_license: string }) => {
+        // console.log(data);
+        console.log(newData);
+
+        let id: string = formProps.form?.getFieldsValue(true).id
+        // console.log(id, apiUrl);
+
+        await axios.get(apiUrl + `/vehicles/${id}`).then(async res => {
+            let oldData = res.data
+
+            let setUpdate_log = {
+                picture: oldData.picture,
+                plateNo: oldData.plateNo,
+                status: oldData.status,
+                province: oldData.province
+            }
+
+
+            let logArr: { driver_id: string, date: string, log: {} } = {
+                driver_id: id,
+                date: moment().format("YYYYMMDD"),
+                log: setUpdate_log
+            }
+
+
+            await create.mutate({
+                resource: "tracker-logs",
+                values: logArr
+            });
+            if (newData.status === 'cancle') {
+                newData.cancle_date = moment().format('YYYYMMDD')
+                await update.mutate({
+                    resource: "vehicles",
+                    id: id,
+                    values: newData,
+
+                })
+            } else {
+
+                await update.mutate({
+                    resource: "vehicles",
+                    id: id,
+                    values: newData,
+                })
+            }
+            close()
+
+        })
+    }
     return (
         <Drawer
             {...drawerProps}
@@ -98,6 +152,7 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
             >
                 <Form
                     {...formProps}
+                    onFinish={(d) => onFinish(d)}
                     layout="vertical"
                 // initialValues={{
                 //     isActive: true,
@@ -162,6 +217,7 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
                         <Radio.Group>
                             <Radio value={'approve'}>{t("อนุมัติ")}</Radio>
                             <Radio value={'block'}>{t("บล็อค")}</Radio>
+                            <Radio value={'cancle'}>{t("ยกเลิก")}</Radio>
                         </Radio.Group>
                     </Form.Item>
                 </Form>

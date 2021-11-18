@@ -18,8 +18,13 @@ import {
     getValueFromEvent,
     useApiUrl,
     useSelect,
+    useCreate,
+    useUpdate,
+    useResource
 } from "@pankod/refine";
 import React from 'react'
+import axios from 'axios'
+import moment from 'moment'
 const { Text } = Typography;
 interface DataType {
     key: React.Key;
@@ -34,15 +39,18 @@ type EditDriverProps = {
     drawerProps: DrawerProps;
     formProps: FormProps;
     saveButtonProps: ButtonProps;
+    close: () => void
 };
 
 export const EditDriver: React.FC<EditDriverProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
-
+    close
 }) => {
 
+
+    const [form] = Form.useForm()
     const t = useTranslate();
     const apiUrl = useApiUrl();
     const breakpoint = Grid.useBreakpoint();
@@ -51,6 +59,9 @@ export const EditDriver: React.FC<EditDriverProps> = ({
         reader.addEventListener('load', () => callback(reader.result));
         reader.readAsDataURL(img);
     }
+    const update = useUpdate<any>();
+
+    const create = useCreate<any>();
     const handleChange = (info: any) => {
         if (info.file.status === 'uploading') {
             setState({ ...state, loading: true });
@@ -86,6 +97,69 @@ export const EditDriver: React.FC<EditDriverProps> = ({
         resource: "drivers",
     });
     const [state, setState] = React.useState({ loading: false, imageUrl: null })
+
+    const onFinish: any = async (newData: { cancle_date?: string, update_log: {}[]; tel: string, name: string; lastname: string; picture: [{}]; status: string; driver_license: string }) => {
+        // console.log(data);
+        console.log(newData.status);
+
+        let id: string = formProps.form?.getFieldsValue(true).id
+        // console.log(id, apiUrl);
+
+        await axios.get(apiUrl + `/drivers/${id}`).then(async res => {
+            let oldData = res.data
+
+
+            let setUpdate_log = {
+                tel: oldData.tel,
+                name: oldData.name,
+                lastname: oldData.lastname,
+                picture: oldData.picture,
+                status: oldData.status,
+                driver_license: oldData.driver_license
+            }
+
+
+
+            let logArr: { driver_id: string, date: string, log: {} } = {
+                driver_id: id,
+                date: moment().format("YYYYMMDD"),
+                log: setUpdate_log
+            }
+            // if (oldData.update_log) {
+            //     logArr = oldData.update_log
+            // }
+
+            // newData.update_log = logArr
+            // console.log(oldData);
+            // console.log(newData);
+            await create.mutate({
+                resource: "tracker-logs",
+                values: logArr
+            });
+            if (newData.status === 'cancle') {
+                newData.cancle_date = moment().format('YYYYMMDD')
+                await update.mutate({
+                    resource: "drivers",
+                    id: id,
+                    values: newData,
+
+                })
+            } else {
+
+                await update.mutate({
+                    resource: "drivers",
+                    id: id,
+                    values: newData,
+                })
+            }
+            close()
+
+        })
+
+    }
+
+
+
     return (
         <Drawer
             {...drawerProps}
@@ -98,6 +172,8 @@ export const EditDriver: React.FC<EditDriverProps> = ({
             >
                 <Form
                     {...formProps}
+                    onFinish={(d) => onFinish(d)}
+
                     layout="vertical"
                 // initialValues={{
                 //     isActive: true,
@@ -141,7 +217,7 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                                 action={`${apiUrl}/upload?token=test01`}
 
                                 listType="picture"
-                            // maxCount={1}
+                                maxCount={1}
                             >
                                 <p className="ant-upload-text">
                                     Drag & drop a file in this area
@@ -202,6 +278,7 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                         <Radio.Group>
                             <Radio value={'approve'}>{t("อนุมัติ")}</Radio>
                             <Radio value={'block'}>{t("บล็อค")}</Radio>
+                            <Radio value={'cancle'}>{t("ยกเลิก")}</Radio>
                         </Radio.Group>
                     </Form.Item>
                 </Form>

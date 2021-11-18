@@ -3,18 +3,20 @@ import {
     TextField,
     TagField,
     DateField,
-    Table,Tag,
+    Table, Tag,
     useTable, Input, Form, useEditableTable,
     Icons, Button,
     DatePicker, Row,
     Col,
     CrudFilters, FormProps, CreateButton,
-    HttpError, EditButton, useDrawerForm, DeleteButton, useDelete, Typography
+    HttpError, EditButton, useDrawerForm, DeleteButton, useDelete, Typography, useApiUrl
 } from "@pankod/refine";
 import React from "react";
 import { CreateVehicle } from "components/vehicle/create"
 import { EditVehicle } from "components/vehicle/edit"
 export const VehicleList: React.FC = (props) => {
+    const apiUrl = useApiUrl();
+
     const { RangePicker } = DatePicker;
     const { Text } = Typography;
     const { tableProps, searchFormProps } = useTable<DataType, HttpError, { name: string }>({
@@ -62,8 +64,10 @@ export const VehicleList: React.FC = (props) => {
         formProps: editFormProps,
         saveButtonProps: editSaveButtonProps,
         show: editShow,
+        close: handleClose,
 
     } = useDrawerForm<DataType>({
+
         action: "edit",
         resource: "vehicles",
         redirect: false,
@@ -84,7 +88,7 @@ export const VehicleList: React.FC = (props) => {
         <React.Fragment>
             <Row gutter={[16, 16]}>
                 <Col span={24}>
-                    <Form layout="vertical" {...searchFormProps}>
+                    <Form style={{ justifyContent: 'end' }} layout="inline" {...searchFormProps}>
                         <Form.Item label="Search" name="name">
                             <Input
                                 placeholder="Plate No"
@@ -94,17 +98,34 @@ export const VehicleList: React.FC = (props) => {
 
                         <Form.Item>
                             <Button htmlType="submit" style={{ backgroundColor: '#1d336d', color: 'white' }}>
-                                Filter
+                                ค้นหา
                             </Button>
                         </Form.Item>
                     </Form>
                 </Col>
                 <Col lg={24} xs={24}>
-                    <List pageHeaderProps={{ extra: <CreateButton style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
+                    <List pageHeaderProps={{ extra: <CreateButton children={'เพิ่มข้อมูลรถ'} style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
                         <Table rowSelection={{
                             type: selectionType,
                             ...rowSelection,
                         }} {...tableProps} rowKey="id">
+                            <Table.Column dataIndex="picture" title="รูปภาพ"
+                                render={(value) => {
+                                    if (value) {
+                                        return <img style={{ width: '48px', height: '48px' }} src={apiUrl + value[0].response[0].url} />
+                                        // console.log(value.length);
+
+                                    } else
+                                        return <div>
+
+                                            <img style={{ width: '48px', height: '48px' }} src='/images/default_car.png' />
+                                        </div>
+                                }
+
+                                }
+                                sorter
+
+                            />
                             <Table.Column dataIndex="plateNo" title="ทะเบียนรถ"
                                 render={(value) => value}
                                 sorter
@@ -117,16 +138,32 @@ export const VehicleList: React.FC = (props) => {
                                 sorter
                             />
                             <Table.Column
-                                dataIndex="status"
-                                title="สถานะ"
-                                render={(value) => <Text style={value === 'approve' ? { color: '#00A524' } : { color: '#FF4F00' }}> {value === 'approve' ? "อนุมัติ" : "บล็อค"} </Text>}
-                                sorter
-                            />
-                            <Table.Column
                                 dataIndex="createdAt"
                                 title="วันที่บันทึก"
                                 render={(value) => <DateField format="DD/MM/YYYY" value={value} />}
                             />
+                            <Table.Column
+                                dataIndex="status"
+                                title="สถานะ"
+                                render={(value) => value === 'block' ? <Tag color="error">บล็อค</Tag> : value === 'approve' ? <Tag color="success">อนุมัติ</Tag> : <Tag color="default">ยกเลิก</Tag>}
+
+                                sorter
+                            />
+                            <Table.Column
+                                dataIndex="cancle_date"
+                                title="วันที่ยกเลิก"
+                                render={(value) => {
+                                    if (value) {
+                                        return <DateField format="DD/MM/YYYY" value={value} />
+
+                                    } else {
+                                        return '-'
+                                    }
+                                }
+                                }
+
+                            />
+
                             <Table.Column<DataType>
                                 title="Actions"
                                 dataIndex="actions"
@@ -134,7 +171,7 @@ export const VehicleList: React.FC = (props) => {
                                 render={(_, record) => (
                                     <>
                                         <img style={{ width: 40, cursor: 'pointer', marginBottom: 4 }} src='/images/icon/editIcon.png' onClick={() => editShow(record.id)} />
-                                        <DeleteButton style={{ border: 0 }} hideText size="large" recordItemId={record.id} />
+                                        {/* <DeleteButton style={{ border: 0 }} hideText size="large" recordItemId={record.id} /> */}
 
                                     </>
                                 )}
@@ -149,6 +186,7 @@ export const VehicleList: React.FC = (props) => {
                 saveButtonProps={createSaveButtonProps}
             />
             <EditVehicle
+                close={handleClose}
                 drawerProps={editDrawerProps}
                 formProps={editFormProps}
                 saveButtonProps={editSaveButtonProps}

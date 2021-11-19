@@ -17,9 +17,11 @@ import {
     Grid,
     getValueFromEvent,
     useApiUrl,
-    useSelect,
+    useSelect, useCustom, useUpdate, useCreate
 } from "@pankod/refine";
 import React from 'react'
+import moment from "moment";
+import axios from 'axios'
 const { Text } = Typography;
 interface DataType {
     key: React.Key;
@@ -34,15 +36,18 @@ type EditBluetoothProps = {
     drawerProps: DrawerProps;
     formProps: FormProps;
     saveButtonProps: ButtonProps;
+    close: () => void
 };
 
 export const EditBluetooth: React.FC<EditBluetoothProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
-
+    close
 }) => {
+    const update = useUpdate<any>();
 
+    const create = useCreate<any>();
     const t = useTranslate();
     const apiUrl = useApiUrl();
     const breakpoint = Grid.useBreakpoint();
@@ -86,6 +91,58 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
         resource: "drivers",
     });
     const [state, setState] = React.useState({ loading: false, imageUrl: null })
+    const OnFinish: any = async (newData: { cancle_date?: string, update_log: {}[]; tel: string, name: string; lastname: string; picture: [{}]; status: string; driver_license: string }) => {
+        // console.log(data);
+
+        let id: string = formProps.form?.getFieldsValue(true).id
+        // console.log(id, apiUrl);
+
+
+        await axios.get(apiUrl + `/bluetooths/${id}`).then(async res => {
+            let oldData = res.data
+
+
+
+            let setUpdate_log = {
+
+
+                mac_address: oldData.mac_address,
+                plate: oldData.plate,
+
+            }
+
+
+            let logArr: { bluetooth_id: string, date: string, log: {} } = {
+                bluetooth_id: id,
+                date: moment().format("YYYYMMDD"),
+                log: {
+                    old_data: setUpdate_log,
+                    new_data: newData
+                }
+            }
+            // if (oldData.update_log) {
+            //     logArr = oldData.update_log
+            // }
+
+            // newData.update_log = logArr
+            // console.log(oldData);
+            // console.log(newData);
+            await create.mutate({
+                resource: "tracker-logs",
+                values: logArr
+            });
+
+
+            await update.mutate({
+                resource: "bluetooths",
+                id: id,
+                values: newData,
+            })
+            close()
+
+        })
+
+    }
     return (
         <Drawer
             {...drawerProps}
@@ -96,8 +153,9 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
                 saveButtonProps={saveButtonProps}
                 pageHeaderProps={{ extra: null }}
             >
-                 <Form
+                <Form
                     {...formProps}
+                    onFinish={(d) => OnFinish(d)}
                     layout="vertical"
                     initialValues={{
                         isActive: true,
@@ -105,7 +163,7 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
                 >
 
                     <Form.Item
-                        label={t("Plate No.")}
+                        label={t("ทะเบียนรถ")}
                         name="plate"
                         rules={[
                             {
@@ -126,8 +184,8 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
                     >
                         <Input />
                     </Form.Item>
-                  
-             
+
+
                 </Form>
             </Edit>
         </Drawer>

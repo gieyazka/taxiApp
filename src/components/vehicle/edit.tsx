@@ -18,11 +18,13 @@ import {
     getValueFromEvent,
     useApiUrl,
     useSelect,
-    useUpdate, useCreate
+    useUpdate, useCreate,
 } from "@pankod/refine";
 import React from 'react'
 import axios from 'axios'
 import moment from 'moment'
+import ProvinceData from '../../province.json'
+
 const { Text } = Typography;
 interface DataType {
     key: React.Key;
@@ -46,7 +48,7 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
     close
 }) => {
     const update = useUpdate<any>();
-
+    const { Option } = Select;
     const create = useCreate<any>();
     const t = useTranslate();
     const apiUrl = useApiUrl();
@@ -112,7 +114,10 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
             let logArr: { driver_id: string, date: string, log: {} } = {
                 driver_id: id,
                 date: moment().format("YYYYMMDD"),
-                log: setUpdate_log
+                log: {
+                    old_data: setUpdate_log,
+                    new_data: newData
+                }
             }
 
 
@@ -207,7 +212,25 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
                             },
                         ]}
                     >
-                        <Input />
+                        <Select
+                            showSearch
+                            // style={{ width: 200 }}
+                            // placeholder="Select a person"
+                            optionFilterProp="children"
+
+                            filterOption={(input, option) =>
+                                //@ts-ignore
+                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                        >
+                            {
+                                ProvinceData.map(d =>
+                                    <Option key={d.PROVINCE_ID} value={d.PROVINCE_NAME}>{d.PROVINCE_NAME}</Option>
+
+                                )
+                            }
+
+                        </Select>
                     </Form.Item>
 
                     <Form.Item

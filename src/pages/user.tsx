@@ -21,10 +21,11 @@ export const UserList: React.FC = (props) => {
 
             const filters: CrudFilters = [];
             const { name } = params;
+
             filters.push(
                 {
-                    field: "name",
-                    operator: "eq",
+                    field: "username",
+                    operator: "contains",
                     value: name,
                 },
 
@@ -49,6 +50,7 @@ export const UserList: React.FC = (props) => {
         formProps: createFormProps,
         saveButtonProps: createSaveButtonProps,
         show: createShow,
+        close: handleCreateClose
     } = useDrawerForm<DataType>({
         action: "create",
         resource: "users",
@@ -61,7 +63,7 @@ export const UserList: React.FC = (props) => {
         formProps: editFormProps,
         saveButtonProps: editSaveButtonProps,
         show: editShow,
-
+        close: handleClose
     } = useDrawerForm<DataType>({
         action: "edit",
         resource: "users",
@@ -83,65 +85,66 @@ export const UserList: React.FC = (props) => {
         <React.Fragment>
             <Row gutter={[16, 16]}>
                 <Col span={24}>
-                    <Form layout="vertical" {...searchFormProps}>
-                        <Form.Item label="Search" name="name">
+                    <Form style={{ justifyContent: 'end' }} layout="inline"  {...searchFormProps}>
+                        <Form.Item name="name">
                             <Input
-                                placeholder="name"
+                                placeholder="ค้นหาผู้ใช้งาน"
                                 prefix={<Icons.SearchOutlined />}
                             />
                         </Form.Item>
 
                         <Form.Item>
                             <Button htmlType="submit" style={{ backgroundColor: '#1d336d', color: 'white' }}>
-                                Filter
+                                ค้นหา
                             </Button>
                         </Form.Item>
                     </Form>
                 </Col>
+
                 <Col lg={24} xs={24}>
-                    <List pageHeaderProps={{ extra: <CreateButton style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
+                    <List pageHeaderProps={{ title: "ข้อมูลผู้ใช้งาน", extra: <CreateButton children={'เพิ่มผู้ใช้งาน'} style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
                         <Table rowSelection={{
                             type: selectionType,
                             ...rowSelection,
                         }} {...tableProps} rowKey="id">
-                            <Table.Column dataIndex="username" title="username"
+                            <Table.Column dataIndex="username" title="ชื่อผู้ใช้"
                                 render={(value) => value}
                                 sorter
 
                             />
                             <Table.Column
                                 dataIndex="email"
-                                title="Email"
+                                title="อีเมลล์"
                                 render={(value) => value}
                                 sorter
                             />
                             <Table.Column
                                 dataIndex="name"
-                                title="name"
+                                title="ชื่อ"
                                 render={(value) => value}
                                 sorter
                             />
                             <Table.Column
                                 dataIndex="lastname"
-                                title="lastname"
+                                title="นามสกุล"
                                 render={(value) => value}
                                 sorter
                             />
                             <Table.Column
                                 dataIndex="tel"
-                                title="tel"
+                                title="เบอร์โทรศัพท์"
                                 render={(value) => value}
                                 sorter
                             />
                             <Table.Column
                                 dataIndex="user_role"
-                                title="role"
+                                title="บทบาท"
                                 render={(value) => value}
                                 sorter
                             />
                             <Table.Column
                                 dataIndex="blocked"
-                                title="status"
+                                title="สถานะ"
                                 render={(value) => value ? <Tag color="error">บล็อค</Tag> : <Tag color="success">อนุมัติ</Tag>}
                                 sorter
                             />
@@ -150,14 +153,14 @@ export const UserList: React.FC = (props) => {
                                 title="วันที่บันทึก"
                                 render={(value) => <DateField format="DD/MM/YYYY" value={value} />}
                             />
-                               <Table.Column<DataType>
-                                title="Actions"
+                            <Table.Column<DataType>
+                                title=""
                                 dataIndex="actions"
                                 key="actions"
                                 render={(_, record) => (
                                     <>
                                         <img style={{ width: 40, cursor: 'pointer', marginBottom: 4 }} src='/images/icon/editIcon.png' onClick={() => editShow(record.id)} />
-                                        <DeleteButton style={{ border: 0 }} hideText size="large" recordItemId={record.id} />
+                                        {/* <DeleteButton style={{ border: 0 }} hideText size="large" recordItemId={record.id} /> */}
 
                                     </>
                                 )}
@@ -168,11 +171,13 @@ export const UserList: React.FC = (props) => {
                 </Col>
             </Row>
             <CreateUser
+                close={handleCreateClose}
                 drawerProps={createDrawerProps}
                 formProps={createFormProps}
                 saveButtonProps={createSaveButtonProps}
             />
             <EditUser
+                close={handleClose}
                 drawerProps={editDrawerProps}
                 formProps={editFormProps}
                 saveButtonProps={editSaveButtonProps}

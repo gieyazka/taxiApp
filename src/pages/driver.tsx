@@ -14,6 +14,7 @@ import {
 import React from "react";
 import { CreateDriver } from "components/driver/create"
 import { EditDriver } from "components/driver/edit"
+import moment from 'moment'
 export const PostList: React.FC = (props) => {
     const apiUrl = useApiUrl();
     const { RangePicker } = DatePicker;
@@ -25,7 +26,7 @@ export const PostList: React.FC = (props) => {
             filters.push(
                 {
                     field: "name",
-                    operator: "eq",
+                    operator: "contains",
                     value: name,
                 },
 
@@ -51,6 +52,7 @@ export const PostList: React.FC = (props) => {
         formProps: createFormProps,
         saveButtonProps: createSaveButtonProps,
         show: createShow,
+        close: handleCreateClose
     } = useDrawerForm<DataType>({
         action: "create",
         resource: "drivers",
@@ -80,10 +82,9 @@ export const PostList: React.FC = (props) => {
         getCheckboxProps: (record: DataType) => ({
             disabled: record.name === 'Disabled User', // Column configuration not to be checked
             name: record.name,
-        }),
+        })
     };
     const [selectionType, setSelectionType] = React.useState<'checkbox' | 'radio'>('checkbox');
-    console.log(tableProps);
 
     return (
         <React.Fragment>
@@ -92,9 +93,9 @@ export const PostList: React.FC = (props) => {
 
                     <Form style={{ justifyContent: 'end' }} layout="inline" {...searchFormProps}>
 
-                        <Form.Item label="Search" name="name">
+                        <Form.Item name="name">
                             <Input
-                                placeholder="name"
+                                placeholder="ค้นหาผู้ขับรถ"
                                 prefix={<Icons.SearchOutlined />}
 
                             />
@@ -108,11 +109,13 @@ export const PostList: React.FC = (props) => {
                     </Form>
                 </Col>
                 <Col lg={24} xs={24}>
-                    <List pageHeaderProps={{ extra: <CreateButton children={'เพิ่มข้อมูลคนขับ'} style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
-                        <Table rowSelection={{
-                            type: selectionType,
-                            ...rowSelection,
-                        }} {...tableProps} dataSource={tableProps.dataSource?.filter(d => d.role === 'driver')} rowKey="id">
+                    <List pageHeaderProps={{ title: 'ข้อมูลผู้ขับรถ', extra: <CreateButton children={'เพิ่มข้อมูลคนขับ'} style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
+                        <Table
+                            // rowSelection={{
+                            //     type: selectionType,
+                            //     ...rowSelection,
+                            // }} 
+                            {...tableProps} dataSource={tableProps.dataSource?.filter(d => d.role === 'driver')} rowKey="id">
 
                             <Table.Column dataIndex="picture" title="รูปภาพ"
                                 render={(value) => {
@@ -129,6 +132,11 @@ export const PostList: React.FC = (props) => {
                                 }
 
                                 }
+                                sorter
+
+                            />
+                                  <Table.Column dataIndex="username" title="ชื่อผู้ใช้งาน"
+                                render={(value) => value}
                                 sorter
 
                             />
@@ -156,9 +164,9 @@ export const PostList: React.FC = (props) => {
                                 sorter
                             />
                             <Table.Column
-                                dataIndex="createdAt"
+                                dataIndex="create_date"
                                 title="วันที่บันทึก"
-                                render={(value) => <DateField format="DD/MM/YYYY" value={value} />}
+                                render={(value) => moment(value, 'YYYYMMDD').format('DD/MM/YYYY')}
                             />
                             <Table.Column
                                 dataIndex="status"
@@ -181,7 +189,7 @@ export const PostList: React.FC = (props) => {
 
                             />
                             <Table.Column<DataType>
-                                title="Actions"
+                                title=""
                                 dataIndex="actions"
                                 key="actions"
                                 render={(_, record) => (
@@ -197,6 +205,7 @@ export const PostList: React.FC = (props) => {
                 </Col>
             </Row>
             <CreateDriver
+                close={handleCreateClose}
                 drawerProps={createDrawerProps}
                 formProps={createFormProps}
                 saveButtonProps={createSaveButtonProps}

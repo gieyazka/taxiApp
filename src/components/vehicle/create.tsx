@@ -18,7 +18,7 @@ import {
     Grid,
     getValueFromEvent,
     useApiUrl,
-    useSelect,
+    useSelect, useCreate
 } from "@pankod/refine";
 import React from 'react'
 import {
@@ -27,6 +27,7 @@ import {
     mediaUploadMapper,
 } from "@pankod/refine-strapi";
 import ProvinceData from '../../province.json'
+import moment from "moment";
 const { Text } = Typography;
 interface DataType {
     key: React.Key;
@@ -42,15 +43,17 @@ type CreateVehicleProps = {
     drawerProps: DrawerProps;
     formProps: FormProps;
     saveButtonProps: ButtonProps;
+    close: () => void
 };
 
 export const CreateVehicle: React.FC<CreateVehicleProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
+    close
 }) => {
     const { Option } = Select;
-
+    const create = useCreate<any>();
     const t = useTranslate();
     const apiUrl = useApiUrl();
     const breakpoint = Grid.useBreakpoint();
@@ -96,7 +99,15 @@ export const CreateVehicle: React.FC<CreateVehicleProps> = ({
         }
         return isJpgOrPng && isLt2M;
     }
+    const onFinish = async (data: any) => {
+        await create.mutate({
+            resource: "vehicles",
+            values: { ...data, create_date: moment().format('YYYYMMDD') }
+        });
 
+        close()
+
+    }
     return (
         <Drawer
             {...drawerProps}
@@ -107,6 +118,7 @@ export const CreateVehicle: React.FC<CreateVehicleProps> = ({
                 {/* <Create saveButtonProps={saveButtonProps}> */}
                 <Form
                     {...formProps}
+                    onFinish={(d) => onFinish(d)}
                     layout="vertical"
                     initialValues={{
                         isActive: true,

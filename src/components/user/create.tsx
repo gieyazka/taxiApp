@@ -17,9 +17,10 @@ import {
     Grid,
     getValueFromEvent,
     useApiUrl,
-    useSelect,
+    useSelect, useCreate
 } from "@pankod/refine";
 import React from 'react'
+import moment from "moment";
 import {
     useStrapiUpload,
     getValueProps,
@@ -40,13 +41,16 @@ type CreateUserProps = {
     drawerProps: DrawerProps;
     formProps: FormProps;
     saveButtonProps: ButtonProps;
+    close: () => void
 };
 
 export const CreateUser: React.FC<CreateUserProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
+    close
 }) => {
+    const create = useCreate<any>();
     const t = useTranslate();
     const apiUrl = useApiUrl();
     const breakpoint = Grid.useBreakpoint();
@@ -92,23 +96,33 @@ export const CreateUser: React.FC<CreateUserProps> = ({
         }
         return isJpgOrPng && isLt2M;
     }
+    const onFinish = async (data: any) => {
+        await create.mutate({
+            resource: "drivers",
+            values: { ...data, create_date: moment().format('YYYYMMDD') }
+        });
+        close()
 
+    }
     return (
         <Drawer
             {...drawerProps}
             width={breakpoint.sm ? "500px" : "100%"}
             bodyStyle={{ padding: 0 }}
         >
+
             <Create saveButtonProps={saveButtonProps}>
                 {/* <Create saveButtonProps={saveButtonProps}> */}
                 <Form
                     {...formProps}
+                    // onFinish={(data) => onFinish(data)}
+
                     layout="vertical"
                     initialValues={{
                         isActive: true,
                     }}
                 >
-                    <Form.Item style={{ textAlign: 'center' }} label={t("Image")}>
+                    <Form.Item style={{ textAlign: 'center' }} label={t("รูปภาพ")}>
                         <Form.Item
                             style={{ height: 128, width: 128 }}
                             name="picture"
@@ -148,7 +162,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                         </Form.Item>
                     </Form.Item>
                     <Form.Item
-                        label={t("username")}
+                        label={t("ชื่อผู้ใช้")}
                         name="username"
                         rules={[
                             {
@@ -159,7 +173,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label={t("password")}
+                        label={t("รหัสผ่าน")}
                         name="password"
                         rules={[
                             {
@@ -170,7 +184,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label={t("email")}
+                        label={t("อีเมลล์")}
                         name="email"
                         rules={[
                             {
@@ -181,7 +195,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                         <Input type='email' />
                     </Form.Item>
                     <Form.Item
-                        label={t("name")}
+                        label={t("ชื่อ")}
                         name="name"
                         rules={[
                             {
@@ -192,7 +206,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label={t("lastname")}
+                        label={t("นามสกุล")}
                         name="lastname"
                         rules={[
                             {
@@ -203,7 +217,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label={t("tel.")}
+                        label={t("เบอร์โทรศัพท์")}
                         name="tel"
                         rules={[
                             {
@@ -215,7 +229,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label={t("role")}
+                        label={t("บทบาท")}
                         name="user_role"
                         rules={[
                             {

@@ -42,9 +42,13 @@ export const CustomMenu: React.FC = () => {
                         <Link to={route}>{label}</Link>
                     </Menu.Item>
                 ))}
-
+                <Menu.Item key={'reportdriver'} 
+                // icon={<img src='/images/icon/dashboard.png' />}
+                >
+                    <Link to={'reportdriver'}>รายงานคนขับรถ</Link>
+                </Menu.Item>
                 <Menu.Item key={'Logout'} icon={<LogoutOutlined />}>
-                    <Link onClick={() => logout()} > Logout</Link>
+                    <Link onClick={() => logout()} > ออกจากระบบ</Link>
                 </Menu.Item>
 
             </Menu>

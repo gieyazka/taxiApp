@@ -110,7 +110,7 @@ export const CreateBluetooth: React.FC<CreateBluetoothProps> = ({
                 >
 
                     <Form.Item
-                        label={t("Plate No.")}
+                        label={t("ทะเบียนรถ")}
                         name="plate"
                         rules={[
                             {

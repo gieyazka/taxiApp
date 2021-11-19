@@ -123,7 +123,10 @@ export const EditDriver: React.FC<EditDriverProps> = ({
             let logArr: { driver_id: string, date: string, log: {} } = {
                 driver_id: id,
                 date: moment().format("YYYYMMDD"),
-                log: setUpdate_log
+                log: {
+                    old_data: setUpdate_log,
+                new_data: newData
+                }
             }
             // if (oldData.update_log) {
             //     logArr = oldData.update_log

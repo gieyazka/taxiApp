@@ -22,7 +22,7 @@ export const Bluetooth: React.FC = (props) => {
             const filters: CrudFilters = [];
             const { name } = params;
             console.log(name);
-            
+
             filters.push(
                 {
                     field: "plate",
@@ -51,6 +51,7 @@ export const Bluetooth: React.FC = (props) => {
         formProps: createFormProps,
         saveButtonProps: createSaveButtonProps,
         show: createShow,
+
     } = useDrawerForm<DataType>({
         action: "create",
         resource: "bluetooths",
@@ -63,7 +64,7 @@ export const Bluetooth: React.FC = (props) => {
         formProps: editFormProps,
         saveButtonProps: editSaveButtonProps,
         show: editShow,
-
+        close: handleClose
     } = useDrawerForm<DataType>({
         action: "edit",
         resource: "bluetooths",
@@ -101,19 +102,19 @@ export const Bluetooth: React.FC = (props) => {
                     </Form>
                 </Col>
                 <Col lg={24} xs={24}>
-                    <List pageHeaderProps={{ extra: <CreateButton style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
+                    <List pageHeaderProps={{ title: "ข้อมูลบลูทูธ", extra: <CreateButton style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
                         <Table rowSelection={{
                             type: selectionType,
                             ...rowSelection,
                         }} {...tableProps} rowKey="id">
-                            <Table.Column dataIndex="id" title="id"
+                            {/* <Table.Column dataIndex="id" title="id"
                                 render={(value) => value}
                                 sorter
 
-                            />
+                            /> */}
                             <Table.Column
                                 dataIndex="plate"
-                                title="plate"
+                                title="ทะเบียนรถ"
                                 render={(value) => value}
                                 sorter
                             />
@@ -123,15 +124,15 @@ export const Bluetooth: React.FC = (props) => {
                                 render={(value) => value}
                                 sorter
                             />
-                    
+
                             <Table.Column<DataType>
-                                title="Actions"
+                                title=""
                                 dataIndex="actions"
                                 key="actions"
                                 render={(_, record) => (
                                     <>
                                         <img style={{ width: 40, cursor: 'pointer', marginBottom: 4 }} src='/images/icon/editIcon.png' onClick={() => editShow(record.id)} />
-                                        <DeleteButton style={{ border: 0 }} hideText size="large" recordItemId={record.id} />
+                                        {/* <DeleteButton style={{ border: 0 }} hideText size="large" recordItemId={record.id} /> */}
 
                                     </>
                                 )}
@@ -146,6 +147,7 @@ export const Bluetooth: React.FC = (props) => {
                 saveButtonProps={createSaveButtonProps}
             />
             <EditBluetooth
+                close={handleClose}
                 drawerProps={editDrawerProps}
                 formProps={editFormProps}
                 saveButtonProps={editSaveButtonProps}

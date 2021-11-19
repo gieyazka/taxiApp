@@ -81,7 +81,7 @@ export const Login: React.FC = () => {
                                         fontSize: "12px",
                                     }}
                                 >
-                                    Remember me
+                                    จดจำผู้ใช้งาน
                                 </Checkbox>
                             </Form.Item>
                             <br />

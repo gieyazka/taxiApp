@@ -17,7 +17,7 @@ import {
     Grid,
     getValueFromEvent,
     useApiUrl,
-    useSelect,
+    useSelect, useCreate
 } from "@pankod/refine";
 import React from 'react'
 import {
@@ -25,6 +25,7 @@ import {
     getValueProps,
     mediaUploadMapper,
 } from "@pankod/refine-strapi";
+import moment from 'moment'
 const { Text } = Typography;
 interface DataType {
     key: React.Key;
@@ -40,13 +41,16 @@ type CreateDriverProps = {
     drawerProps: DrawerProps;
     formProps: FormProps;
     saveButtonProps: ButtonProps;
+    close: () => void
 };
 
 export const CreateDriver: React.FC<CreateDriverProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
+    close
 }) => {
+    const create = useCreate<any>();
     const t = useTranslate();
     const apiUrl = useApiUrl();
     const breakpoint = Grid.useBreakpoint();
@@ -92,7 +96,14 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
         }
         return isJpgOrPng && isLt2M;
     }
+    const onFinish = async (data: any) => {
+        await create.mutate({
+            resource: "drivers",
+            values: { ...data, create_date: moment().format('YYYYMMDD') }
+        });
+        close()
 
+    }
     return (
         <Drawer
             {...drawerProps}
@@ -103,6 +114,7 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                 {/* <Create saveButtonProps={saveButtonProps}> */}
                 <Form
                     {...formProps}
+                    onFinish={(data) => onFinish(data)}
                     layout="vertical"
                     initialValues={{
                         isActive: true,
@@ -146,7 +158,7 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                             <Upload.Dragger
                                 name="files"
                                 action={`${apiUrl}/upload?token=test01`}
-                              listType="picture"
+                                listType="picture"
                                 maxCount={1}
                                 accept=".png"
 
@@ -168,7 +180,7 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                         </Form.Item>
                     </Form.Item>
                     <Form.Item
-                        label={t("username")}
+                        label={t("ชื่อผู้ใช้")}
                         name="password"
                         rules={[
                             {
@@ -179,7 +191,7 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label={t("password")}
+                        label={t("รหัสผ่าน")}
                         name="username"
                         rules={[
                             {

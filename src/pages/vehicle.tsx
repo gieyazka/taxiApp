@@ -14,6 +14,7 @@ import {
 import React from "react";
 import { CreateVehicle } from "components/vehicle/create"
 import { EditVehicle } from "components/vehicle/edit"
+import moment from 'moment'
 export const VehicleList: React.FC = (props) => {
     const apiUrl = useApiUrl();
 
@@ -27,7 +28,7 @@ export const VehicleList: React.FC = (props) => {
             filters.push(
                 {
                     field: "plateNo",
-                    operator: "eq",
+                    operator: "contains",
                     value: name,
                 },
 
@@ -52,6 +53,7 @@ export const VehicleList: React.FC = (props) => {
         formProps: createFormProps,
         saveButtonProps: createSaveButtonProps,
         show: createShow,
+        close: handleCreateClose,
     } = useDrawerForm<DataType>({
         action: "create",
         resource: "vehicles",
@@ -89,9 +91,9 @@ export const VehicleList: React.FC = (props) => {
             <Row gutter={[16, 16]}>
                 <Col span={24}>
                     <Form style={{ justifyContent: 'end' }} layout="inline" {...searchFormProps}>
-                        <Form.Item label="Search" name="name">
+                        <Form.Item name="name">
                             <Input
-                                placeholder="Plate No"
+                                placeholder="ค้นหาทะเบียนรถ"
                                 prefix={<Icons.SearchOutlined />}
                             />
                         </Form.Item>
@@ -104,11 +106,13 @@ export const VehicleList: React.FC = (props) => {
                     </Form>
                 </Col>
                 <Col lg={24} xs={24}>
-                    <List pageHeaderProps={{ extra: <CreateButton children={'เพิ่มข้อมูลรถ'} style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
-                        <Table rowSelection={{
-                            type: selectionType,
-                            ...rowSelection,
-                        }} {...tableProps} rowKey="id">
+                    <List pageHeaderProps={{ title: 'ข้อมูลรถ', extra: <CreateButton children={'เพิ่มข้อมูลรถ'} style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
+                        <Table
+                            // rowSelection={{
+                            //     type: selectionType,
+                            //     ...rowSelection,
+                            // }}
+                            {...tableProps} rowKey="id">
                             <Table.Column dataIndex="picture" title="รูปภาพ"
                                 render={(value) => {
                                     if (value) {
@@ -138,9 +142,10 @@ export const VehicleList: React.FC = (props) => {
                                 sorter
                             />
                             <Table.Column
-                                dataIndex="createdAt"
+                                dataIndex="create_date"
                                 title="วันที่บันทึก"
-                                render={(value) => <DateField format="DD/MM/YYYY" value={value} />}
+                                render={(value) => moment(value, 'YYYYMMDD').format('DD/MM/YYYY')}
+
                             />
                             <Table.Column
                                 dataIndex="status"
@@ -165,7 +170,7 @@ export const VehicleList: React.FC = (props) => {
                             />
 
                             <Table.Column<DataType>
-                                title="Actions"
+                                title=""
                                 dataIndex="actions"
                                 key="actions"
                                 render={(_, record) => (
@@ -184,6 +189,7 @@ export const VehicleList: React.FC = (props) => {
                 drawerProps={createDrawerProps}
                 formProps={createFormProps}
                 saveButtonProps={createSaveButtonProps}
+                close={handleCreateClose}
             />
             <EditVehicle
                 close={handleClose}

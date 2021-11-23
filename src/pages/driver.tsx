@@ -109,7 +109,7 @@ export const PostList: React.FC = (props) => {
                     </Form>
                 </Col>
                 <Col lg={24} xs={24}>
-                    <List pageHeaderProps={{ title: 'ข้อมูลผู้ขับรถ', extra: <CreateButton children={'เพิ่มข้อมูลคนขับ'} style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
+                    <List pageHeaderProps={{ title: 'ข้อมูลผู้ขับรถ', extra: <CreateButton children={'เพิ่มข้อมูลผู้ขับ'} style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
                         <Table
                             // rowSelection={{
                             //     type: selectionType,

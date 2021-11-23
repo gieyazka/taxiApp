@@ -127,17 +127,26 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
             // newData.update_log = logArr
             // console.log(oldData);
             // console.log(newData);
-            await create.mutate({
-                resource: "tracker-logs",
-                values: logArr
-            });
 
 
-            await update.mutate({
+            update.mutate({
                 resource: "bluetooths",
                 id: id,
                 values: newData,
-            })
+
+            }, {
+                onSuccess: (data: any) => {
+                    create.mutate({
+                        resource: "tracker-logs",
+                        values: logArr
+                    });
+
+                }
+            }
+            )
+
+
+
             close()
 
         })

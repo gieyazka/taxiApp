@@ -20,11 +20,7 @@ import {
     useSelect, useCreate
 } from "@pankod/refine";
 import React from 'react'
-import {
-    useStrapiUpload,
-    getValueProps,
-    mediaUploadMapper,
-} from "@pankod/refine-strapi";
+
 import moment from 'moment'
 const { Text } = Typography;
 interface DataType {

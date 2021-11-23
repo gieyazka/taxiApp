@@ -50,6 +50,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
     saveButtonProps,
     close
 }) => {
+    const { Option } = Select;
     const create = useCreate<any>();
     const t = useTranslate();
     const apiUrl = useApiUrl();
@@ -238,7 +239,20 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                             },
                         ]}
                     >
-                        <Input />
+                        <Select
+                            showSearch
+                   
+                            // placeholder="Select a person"
+                            optionFilterProp="children"
+
+                            filterOption={(input, option) =>
+                                option?.children.indexOf(input.toLowerCase()) >= 0
+                            }
+                        >
+                            <Option value="superadmin">Super Admin</Option>
+                            <Option value="admin">Admin</Option>
+                     
+                        </Select>
                     </Form.Item>
                     <Form.Item
                         label={t("สถานะ")}

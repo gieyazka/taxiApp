@@ -125,7 +125,7 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                 date: moment().format("YYYYMMDD"),
                 log: {
                     old_data: setUpdate_log,
-                new_data: newData
+                    new_data: newData
                 }
             }
             // if (oldData.update_log) {
@@ -135,10 +135,10 @@ export const EditDriver: React.FC<EditDriverProps> = ({
             // newData.update_log = logArr
             // console.log(oldData);
             // console.log(newData);
-            await create.mutate({
-                resource: "tracker-logs",
-                values: logArr
-            });
+            // await create.mutate({
+            //     resource: "tracker-logs",
+            //     values: logArr
+            // });
             if (newData.status === 'cancle') {
                 newData.cancle_date = moment().format('YYYYMMDD')
                 await update.mutate({
@@ -146,6 +146,14 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                     id: id,
                     values: newData,
 
+                }, {
+                    onSuccess: (data: any) => {
+                        create.mutate({
+                            resource: "tracker-logs",
+                            values: logArr
+                        });
+
+                    }
                 })
             } else {
 
@@ -153,6 +161,14 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                     resource: "drivers",
                     id: id,
                     values: newData,
+                }, {
+                    onSuccess: (data: any) => {
+                        create.mutate({
+                            resource: "tracker-logs",
+                            values: logArr
+                        });
+
+                    }
                 })
             }
             close()

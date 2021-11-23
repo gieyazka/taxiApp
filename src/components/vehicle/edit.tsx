@@ -121,10 +121,10 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
             }
 
 
-            await create.mutate({
-                resource: "tracker-logs",
-                values: logArr
-            });
+            // await create.mutate({
+            //     resource: "tracker-logs",
+            //     values: logArr
+            // });
             if (newData.status === 'cancle') {
                 newData.cancle_date = moment().format('YYYYMMDD')
                 await update.mutate({
@@ -132,6 +132,14 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
                     id: id,
                     values: newData,
 
+                }, {
+                    onSuccess: (data: any) => {
+                        create.mutate({
+                            resource: "tracker-logs",
+                            values: logArr
+                        });
+
+                    }
                 })
             } else {
 
@@ -139,6 +147,14 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
                     resource: "vehicles",
                     id: id,
                     values: newData,
+                },{
+                    onSuccess: (data: any) => {
+                        create.mutate({
+                            resource: "tracker-logs",
+                            values: logArr
+                        });
+    
+                    }
                 })
             }
             close()

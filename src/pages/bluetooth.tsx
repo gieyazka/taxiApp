@@ -16,19 +16,22 @@ import { CreateBluetooth } from "components/bluetooth/create"
 import { EditBluetooth } from "components/bluetooth/edit"
 export const Bluetooth: React.FC = (props) => {
     const { RangePicker } = DatePicker;
-    const { tableProps, searchFormProps } = useTable<DataType, HttpError, { name: string }>({
+    const { tableProps, searchFormProps } = useTable<DataType, HttpError, { name: string, mac: string }>({
         onSearch: (params) => {
 
             const filters: CrudFilters = [];
-            const { name } = params;
-            console.log(name);
+            const { name, mac } = params;
 
             filters.push(
                 {
                     field: "plate",
-                    operator: "eq",
+                    operator: "contains",
                     value: name,
-                },
+                }, {
+                field: "mac_address",
+                operator: "contains",
+                value: mac
+            },
 
             );
 
@@ -82,27 +85,34 @@ export const Bluetooth: React.FC = (props) => {
         }),
     };
     const [selectionType, setSelectionType] = React.useState<'checkbox' | 'radio'>('checkbox');
+
     return (
         <React.Fragment>
             <Row gutter={[16, 16]}>
                 <Col span={24}>
-                    <Form layout="vertical" {...searchFormProps}>
-                        <Form.Item label="Search" name="name">
+                    <Form style={{ justifyContent: 'end' }} layout="inline"  {...searchFormProps}>
+                        <Form.Item name="name">
                             <Input
-                                placeholder="ทะเบียนรถ"
+                                placeholder="ค้นหาทะเบียนรถ"
+                                prefix={<Icons.SearchOutlined />}
+                            />
+                        </Form.Item>
+                        <Form.Item name="mac">
+                            <Input
+                                placeholder="ค้นหาบลูทูธ"
                                 prefix={<Icons.SearchOutlined />}
                             />
                         </Form.Item>
 
                         <Form.Item>
                             <Button htmlType="submit" style={{ backgroundColor: '#1d336d', color: 'white' }}>
-                                Filter
+                                ค้นหา
                             </Button>
                         </Form.Item>
                     </Form>
                 </Col>
                 <Col lg={24} xs={24}>
-                    <List pageHeaderProps={{ title: "ข้อมูลบลูทูธ", extra: <CreateButton style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
+                    <List pageHeaderProps={{ title: "ข้อมูลบลูทูธ", extra: <CreateButton children={'เพิ่มข้อมูลบลูทูธ'} style={{ backgroundColor: '#1d336d', color: 'white' }} onClick={() => createShow()} /> }}>
                         <Table rowSelection={{
                             type: selectionType,
                             ...rowSelection,

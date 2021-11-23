@@ -39,7 +39,7 @@ type EditUserProps = {
     close: () => void
 };
 
-    export const EditUser: React.FC<EditUserProps> = ({
+export const EditUser: React.FC<EditUserProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
@@ -100,17 +100,17 @@ type EditUserProps = {
         await axios.get(apiUrl + `/users/${id}`).then(async res => {
             let oldData = res.data
 
-       
+
 
             let setUpdate_log = {
                 tel: oldData.tel,
-                username : oldData.username,
-                email : oldData.email,
+                username: oldData.username,
+                email: oldData.email,
                 name: oldData.name,
                 lastname: oldData.lastname,
                 picture: oldData.picture,
                 blocked: oldData.status,
-                
+
             }
 
 
@@ -130,10 +130,10 @@ type EditUserProps = {
             // newData.update_log = logArr
             // console.log(oldData);
             // console.log(newData);
-            await create.mutate({
-                resource: "tracker-logs",
-                values: logArr
-            });
+            // await create.mutate({
+            //     resource: "tracker-logs",
+            //     values: logArr
+            // });
             if (newData.status === 'cancle') {
                 newData.cancle_date = moment().format('YYYYMMDD')
                 await update.mutate({
@@ -141,6 +141,14 @@ type EditUserProps = {
                     id: id,
                     values: newData,
 
+                }, {
+                    onSuccess: (data: any) => {
+                        create.mutate({
+                            resource: "tracker-logs",
+                            values: logArr
+                        });
+
+                    }
                 })
             } else {
 
@@ -148,6 +156,14 @@ type EditUserProps = {
                     resource: "users",
                     id: id,
                     values: newData,
+                }, {
+                    onSuccess: (data: any) => {
+                        create.mutate({
+                            resource: "tracker-logs",
+                            values: logArr
+                        });
+
+                    }
                 })
             }
             close()

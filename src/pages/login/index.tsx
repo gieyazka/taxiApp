@@ -8,12 +8,11 @@ import {
     Form,
     Input,
     Button,
-    Checkbox,
+    Checkbox,useLogin
 } from "@pankod/refine";
 import "./styles.css";
 
 import { UserOutlined } from '@ant-design/icons';
-import { useLogin } from "@pankod/refine";
 
 const { Text, Title } = Typography;
 
@@ -28,11 +27,7 @@ export const Login: React.FC = () => {
 
     const { mutate: login } = useLogin<ILoginForm>();
 
-    const CardTitle = (
-        <Title level={3} className="title">
-            Sign in your account
-        </Title>
-    );
+
 
     return (
         <div >

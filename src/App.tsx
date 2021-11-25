@@ -13,6 +13,7 @@ import { Bluetooth } from "./pages/bluetooth";
 import { BookingList } from "./pages/booking";
 import { AuthenticatedCustomPage } from "./pages/dashboard";
 import { DriverReport } from "./pages/report";
+import { BluetoothReport } from "./pages/bluetoothreport";
 import { CustomMenu } from "./components/menu";
 import { Login } from "pages/login";
 import { CreateDriver } from "components/driver/create"
@@ -43,8 +44,12 @@ function App() {
         username,
         password,
       );
+
+
       if (status === 200) {
         localStorage.setItem(TOKEN_KEY, data.jwt);
+      //@ts-ignore
+        localStorage.setItem("Token", data.user.token?.token);
 
         // set header axios instance
         axiosInstance.defaults.headers = {
@@ -81,6 +86,7 @@ function App() {
       const { data, status } = await strapiAuthHelper.me(token);
       if (status === 200) {
         const { id, username, email } = data;
+
         return Promise.resolve({
           id,
           username,
@@ -108,6 +114,10 @@ function App() {
           {
             component: DriverReport,
             path: "/reportdriver",
+          },
+          {
+            component: BluetoothReport,
+            path: "/reportbluetooth",
           },
         ]
       }}

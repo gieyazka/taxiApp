@@ -5,7 +5,6 @@ import {
     Grid,
     Icons,
     useNavigation,
-
     useMenu,
     useTitle,
     useLogout, Button
@@ -55,11 +54,21 @@ export const CustomMenu: React.FC = () => {
                             <Link to={route}>{label}</Link>
                         </Menu.Item>
                     ))}
-                    <Menu.Item key={'reportdriver'} icon={<img style={{ width: 18 }} src='/images/icon/reportDriver.png' />}
+                    {/* <Menu.Item key={'reportdriver'} icon={<img style={{ width: 18 }} src='/images/icon/reportDriver.png' />}
                     // icon={<img src='/images/icon/dashboard.png' />}
                     >
                         <Link to={'reportdriver'}>รายงานผู้ขับรถ</Link>
-                    </Menu.Item>
+                    </Menu.Item> */}
+                    {/* <Menu.Item key={'reportbluetooth'} icon={<img style={{ width: 18 }} src='/images/icon/reportDriver.png' />}
+                    // icon={<img src='/images/icon/dashboard.png' />}
+                    >
+                        <Link to={'reportbluetooth'}>รายงานผู้ขับรถ</Link>
+                    </Menu.Item> */}
+                    <Menu.SubMenu key="sub1"  icon={<img style={{ width: 18 }} src='/images/icon/reportDriver.png' />} title="รายงานข้อมูล">
+                        <Menu.Item key="reportdriver">รายงานผู้ขับรถ</Menu.Item>
+                        <Menu.Item key="reportbluetooth">รายงานการ</Menu.Item>
+               
+                    </Menu.SubMenu>
                     <Menu.Item key={'logout'} icon={<LogoutOutlined />}>
                         <Link onClick={() => logout()} to={""} > ออกจากระบบ</Link>
                     </Menu.Item>

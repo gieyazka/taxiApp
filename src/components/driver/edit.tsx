@@ -7,6 +7,7 @@ import {
     Input,
     InputNumber,
     Radio,
+    Icons,
     Select,
     Space,
     ButtonProps,
@@ -157,21 +158,41 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                 })
             } else {
 
-                await update.mutate({
+                update.mutate({
                     resource: "drivers",
                     id: id,
                     values: newData,
+                    successNotification: {
+                        icon: <Icons.CheckCircleTwoTone  twoToneColor="#52c41a" />,
+                        message: 'แก้ไขข้อมูลผู้ขับรถสำเร็จ'
+                    },
+                    errorNotification: {
+                        icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                        message: 'แก้ไขข้อมูลผู้ขับรถไม่สำเร็จ'
+                    }
                 }, {
                     onSuccess: (data: any) => {
                         create.mutate({
                             resource: "tracker-logs",
-                            values: logArr
+                            values: logArr,
+                            successNotification: {
+                                icon: <Icons.CheckCircleTwoTone  twoToneColor="#52c41a" />,
+                                message: 'บันทึกข้อมูลการแก้ไข้ผู้ขับรถสำเร็จ'
+                            },
+                            errorNotification: {
+                                icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                                message: 'บันทึกข้อมูลการแก้ไข้ผู้ขับรถไม่สำเร็จ'
+                            }
+                        }, {
+                            onSuccess: () => {
+                                close();
+
+                            }
                         });
 
                     }
                 })
             }
-            close()
 
         })
 

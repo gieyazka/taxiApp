@@ -12,6 +12,7 @@ import {
     ButtonProps,
     useTranslate,
     Avatar,
+    Icons,
     Typography,
     Upload,
     Grid,
@@ -95,9 +96,22 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
     const onFinish = async (data: any) => {
         await create.mutate({
             resource: "drivers",
-            values: { ...data, create_date: moment().format('YYYYMMDD') }
+            values: { ...data, create_date: moment().format('YYYYMMDD') },
+            successNotification: {
+                icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                message: 'เพิ่มผู้ขับรถสำเร็จ'
+            },
+            errorNotification: {
+                icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                message: 'เพิ่มผู้ขับรถไม่สำเร็จ',
+                description : 'กรุณาตรวจสอบชื่อผู้ใช้หรือเลขที่ใบขับขี่'
+            }
+        }, {
+            onSuccess: () => {
+                close()
+
+            }
         });
-        close()
 
     }
     return (
@@ -177,7 +191,7 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                     </Form.Item>
                     <Form.Item
                         label={t("ชื่อผู้ใช้")}
-                        name="password"
+                        name="username"
                         rules={[
                             {
                                 required: true,
@@ -188,7 +202,7 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                     </Form.Item>
                     <Form.Item
                         label={t("รหัสผ่าน")}
-                        name="username"
+                        name="password"
                         rules={[
                             {
                                 required: true,

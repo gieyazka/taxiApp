@@ -9,8 +9,10 @@ import {
     DatePicker, Row,
     Col,
     CrudFilters, FormProps, CreateButton,
-    HttpError, EditButton, useDrawerForm, DeleteButton, useDelete
+    HttpError, EditButton, useDrawerForm, DeleteButton, useDelete, useApiUrl
+
 } from "@pankod/refine";
+import axios from "axios";
 import React from "react";
 import { CreateBluetooth } from "components/bluetooth/create"
 import { EditBluetooth } from "components/bluetooth/edit"
@@ -47,7 +49,15 @@ export const Bluetooth: React.FC = (props) => {
         id: string;
         picture: [{}];
     }
+    const apiUrl = useApiUrl();
+    const [vehicleState, setVehicleState] = React.useState<{}[]>()
 
+    React.useMemo(async () => {
+        await axios.get(apiUrl + `/vehicles?token=${localStorage.getItem('Token')}`).then(async res => {
+            setVehicleState(res.data.filter((d : any )=> !d.bluetooth));
+
+        })
+    }, [])
     //Create Drawer
     const {
         drawerProps: createDrawerProps,
@@ -59,6 +69,14 @@ export const Bluetooth: React.FC = (props) => {
         action: "create",
         resource: "bluetooths",
         redirect: false,
+        successNotification: {
+            icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+            message: 'บันทึกข้อมูลบลูทูธสำเร็จ'
+        },
+        errorNotification: {
+            icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+            message: 'บันทึกข้อมูลบลูทูธไม่สำเร็จ'
+        }
     });
 
     //Edit Drawer
@@ -123,9 +141,18 @@ export const Bluetooth: React.FC = (props) => {
 
                             /> */}
                             <Table.Column
-                                dataIndex="plate"
+                                dataIndex="vehicle"
                                 title="ทะเบียนรถ"
-                                render={(value) => value}
+                                render={(value) => {
+                                    // console.log(value.plateNo)
+                                    if (value && value.plateNo !== null && value.plateNo !== undefined) {
+                                        return value.plateNo
+                                    } else {
+                                        return " - "
+
+                                    }
+                                }
+                                }
                                 sorter
                             />
                             <Table.Column
@@ -152,11 +179,13 @@ export const Bluetooth: React.FC = (props) => {
                 </Col>
             </Row>
             <CreateBluetooth
+                vehicleState={vehicleState}
                 drawerProps={createDrawerProps}
                 formProps={createFormProps}
                 saveButtonProps={createSaveButtonProps}
             />
             <EditBluetooth
+                vehicleState={vehicleState}
                 close={handleClose}
                 drawerProps={editDrawerProps}
                 formProps={editFormProps}

@@ -17,7 +17,7 @@ import {
     Grid,
     getValueFromEvent,
     useApiUrl,
-    useSelect, useCreate
+    useSelect, useCreate, Icons
 } from "@pankod/refine";
 import React from 'react'
 import moment from "moment";
@@ -100,9 +100,22 @@ export const CreateUser: React.FC<CreateUserProps> = ({
     const onFinish = async (data: any) => {
         await create.mutate({
             resource: "drivers",
-            values: { ...data, create_date: moment().format('YYYYMMDD') }
+            values: { ...data, create_date: moment().format('YYYYMMDD') },
+            successNotification: {
+                icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                message: 'เพิ่มผู้ใช้งานสำเร็จ'
+            },
+            errorNotification: {
+                icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                message: 'เพิ่มผู้ขับรถไม่สำเร็จ',
+                description: 'กรุณาตรวจสอบชื่อผู้ใช้'
+            }
+        }, {
+            onSuccess: () => {
+                close()
+            }
         });
-        close()
+
 
     }
     return (
@@ -241,7 +254,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                     >
                         <Select
                             showSearch
-                   
+
                             // placeholder="Select a person"
                             optionFilterProp="children"
 
@@ -251,7 +264,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
                         >
                             <Option value="superadmin">Super Admin</Option>
                             <Option value="admin">Admin</Option>
-                     
+
                         </Select>
                     </Form.Item>
                     <Form.Item

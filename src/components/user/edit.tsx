@@ -12,7 +12,7 @@ import {
     ButtonProps,
     useTranslate,
     Avatar,
-    Typography,
+    Typography, Icons,
     Upload,
     Grid,
     getValueFromEvent,
@@ -156,11 +156,27 @@ export const EditUser: React.FC<EditUserProps> = ({
                     resource: "users",
                     id: id,
                     values: newData,
+                    successNotification: {
+                        icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                        message: 'แก้ไขข้อมูลใช้งานสำเร็จ'
+                    },
+                    errorNotification: {
+                        icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                        message: 'แก้ไขข้อมูลใช้งานไม่สำเร็จ'
+                    }
                 }, {
                     onSuccess: (data: any) => {
                         create.mutate({
                             resource: "tracker-logs",
-                            values: logArr
+                            values: logArr,
+                            successNotification: {
+                                icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                                message: 'บันทึกข้อมูลการแก้ไข้ผู้ใช้งานสำเร็จ'
+                            },
+                            errorNotification: {
+                                icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                                message: 'บันทึกข้อมูลการแก้ไข้ผู้ใช้งานไม่สำเร็จ'
+                            }
                         });
 
                     }

@@ -33,7 +33,7 @@ interface driverState {
     endDate?: string;
     data: any
 }
-const Driver = () => {
+const Bluetooth_Report = () => {
     const apiUrl = useApiUrl();
     const { Text, Title } = Typography
     const [driverState, setDriverState] = React.useState<driverState>()
@@ -266,7 +266,7 @@ const Driver = () => {
                                 rowKey="id" dataSource={driverState.data} bordered={true}   >
                                 <Table.Column dataIndex="picture" title="รูปภาพ"
                                     render={(value) => {
-                                        if (value && value[value.length - 1].status !== 'error') {
+                                        if (value) {
                                             // console.log();
                                             return <img style={{ width: '48px', height: '48px' }} src={apiUrl + value[value.length - 1].response[0].url} />
                                             // console.log(value.length);
@@ -335,11 +335,11 @@ const Driver = () => {
     )
 }
 
-export const DriverReport = () => {
+export const BluetoothReport = () => {
     return (
         <Authenticated>
             <LayoutWrapper>
-                <Driver />
+                <Bluetooth_Report />
             </LayoutWrapper>
         </Authenticated>
     );

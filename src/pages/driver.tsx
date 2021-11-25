@@ -9,7 +9,7 @@ import {
     DatePicker, Row, Tag,
     Col,
     CrudFilters, FormProps, CreateButton,
-    HttpError, EditButton, useDrawerForm, DeleteButton, useDelete, useApiUrl
+    HttpError, EditButton, useDrawerForm, DeleteButton, useDelete, useApiUrl, notification
 } from "@pankod/refine";
 import React from "react";
 import { CreateDriver } from "components/driver/create"
@@ -57,6 +57,8 @@ export const PostList: React.FC = (props) => {
         action: "create",
         resource: "drivers",
         redirect: false,
+        successNotification: false
+
     });
 
     //Edit Drawer
@@ -70,6 +72,8 @@ export const PostList: React.FC = (props) => {
 
     } = useDrawerForm<DataType>({
         action: "edit",
+
+
         resource: "drivers",
         redirect: false,
     });
@@ -119,9 +123,10 @@ export const PostList: React.FC = (props) => {
 
                             <Table.Column dataIndex="picture" title="รูปภาพ"
                                 render={(value) => {
-                                    if (value) {
-                                        // console.log();
-                                        return <img style={{ width: '48px', height: '48px' }} src={apiUrl + value[value.length - 1].response[0].url} />
+
+                                    if (value[value.length - 1].status !== 'error') {
+
+                                        return <img style={{ width: '48px', height: '48px' }} src={apiUrl + value[value.length - 1].response[0]?.url} />
                                         // console.log(value.length);
 
                                     } else
@@ -135,7 +140,7 @@ export const PostList: React.FC = (props) => {
                                 sorter
 
                             />
-                                  <Table.Column dataIndex="username" title="ชื่อผู้ใช้งาน"
+                            <Table.Column dataIndex="username" title="ชื่อผู้ใช้งาน"
                                 render={(value) => value}
                                 sorter
 

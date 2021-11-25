@@ -17,7 +17,7 @@ import {
     Grid,
     getValueFromEvent,
     useApiUrl,
-    useSelect,
+    useSelect, useCustom
 } from "@pankod/refine";
 import React from 'react'
 import {
@@ -25,6 +25,7 @@ import {
     getValueProps,
     mediaUploadMapper,
 } from "@pankod/refine-strapi";
+import axios from "axios";
 const { Text } = Typography;
 interface DataType {
     key: React.Key;
@@ -34,26 +35,36 @@ interface DataType {
     tel: string;
     id: string
 }
-
+interface carType {
+    planteNo: string
+}
 
 type CreateBluetoothProps = {
     drawerProps: DrawerProps;
     formProps: FormProps;
     saveButtonProps: ButtonProps;
-};
+    vehicleState: {}[] | undefined
 
+};
+interface PostUniqueCheckResponse {
+    isAvailable: boolean;
+}
 export const CreateBluetooth: React.FC<CreateBluetoothProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
+    vehicleState
 }) => {
-    const t = useTranslate();
+
+    const { Option } = Select;
     const apiUrl = useApiUrl();
+
+    const t = useTranslate();
     const breakpoint = Grid.useBreakpoint();
     const [state, setState] = React.useState({ loading: false, imageUrl: null })
-    const { selectProps: driversSelectProps } = useSelect<DataType>({
-        resource: "users",
-    });
+    // const { selectProps: driversSelectProps } = useSelect<DataType>({
+    //     resource: "users",
+    // });
     function getBase64(img: Blob, callback: { (imageUrl: any): void; (arg0: string | ArrayBuffer | null): any; }) {
         const reader = new FileReader();
         reader.addEventListener('load', () => callback(reader.result));
@@ -111,14 +122,22 @@ export const CreateBluetooth: React.FC<CreateBluetoothProps> = ({
 
                     <Form.Item
                         label={t("ทะเบียนรถ")}
-                        name="plate"
+                        name="vehicle"
                         rules={[
                             {
                                 required: true,
                             },
                         ]}
                     >
-                        <Input />
+                        <Select>
+
+                            {
+                                vehicleState?.map((d: any) =>
+                                    <Option value={d.id}>{d.plateNo}</Option>
+                                )
+                            }
+                        </Select>
+                        {/* <Select {...selectProps} /> */}
                     </Form.Item>
                     <Form.Item
                         label={t("mac_address")}
@@ -131,8 +150,8 @@ export const CreateBluetooth: React.FC<CreateBluetoothProps> = ({
                     >
                         <Input />
                     </Form.Item>
-                  
-             
+
+
                 </Form>
             </Create>
         </Drawer>

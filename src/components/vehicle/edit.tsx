@@ -15,6 +15,7 @@ import {
     Typography,
     Upload,
     Grid,
+    Icons,
     getValueFromEvent,
     useApiUrl,
     useSelect,
@@ -131,12 +132,31 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
                     resource: "vehicles",
                     id: id,
                     values: newData,
-
+                    successNotification: {
+                        icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                        message: 'แก้ไขข้อมูลรถยนต์สำเร็จ'
+                    },
+                    errorNotification: {
+                        icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                        message: 'แก้ไขข้อมูลรถยนต์ไม่สำเร็จ'
+                    }
                 }, {
                     onSuccess: (data: any) => {
                         create.mutate({
                             resource: "tracker-logs",
-                            values: logArr
+                            values: logArr,
+                            successNotification: {
+                                icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                                message: 'บันทึกข้อมูลการแก้ไข้ผู้ขับรถสำเร็จ'
+                            },
+                            errorNotification: {
+                                icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                                message: 'บันทึกข้อมูลการแก้ไข้ผู้ขับรถไม่สำเร็จ'
+                            }
+                        }, {
+                            onSuccess: () => {
+                                close()
+                            }
                         });
 
                     }
@@ -147,17 +167,36 @@ export const EditVehicle: React.FC<EditVehicleProps> = ({
                     resource: "vehicles",
                     id: id,
                     values: newData,
-                },{
+                    successNotification: {
+                        icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                        message: 'แก้ไขข้อมูลรถยนต์สำเร็จ'
+                    },
+                    errorNotification: {
+                        icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                        message: 'แก้ไขข้อมูลรถยนต์ไม่สำเร็จ'
+                    }
+                }, {
                     onSuccess: (data: any) => {
                         create.mutate({
                             resource: "tracker-logs",
-                            values: logArr
+                            values: logArr,
+                            successNotification: {
+                                icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                                message: 'บันทึกข้อมูลการแก้ไข้ผู้ขับรถสำเร็จ'
+                            },
+                            errorNotification: {
+                                icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                                message: 'บันทึกข้อมูลการแก้ไข้ผู้ขับรถไม่สำเร็จ'
+                            }
+                        }, {
+                            onSuccess: () => {
+                                close()
+                            }
                         });
-    
+
                     }
                 })
             }
-            close()
 
         })
     }

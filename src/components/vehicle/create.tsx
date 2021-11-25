@@ -13,7 +13,7 @@ import {
     ButtonProps,
     useTranslate,
     Avatar,
-    Typography,
+    Typography, Icons,
     Upload,
     Grid,
     getValueFromEvent,
@@ -102,7 +102,15 @@ export const CreateVehicle: React.FC<CreateVehicleProps> = ({
     const onFinish = async (data: any) => {
         await create.mutate({
             resource: "vehicles",
-            values: { ...data, create_date: moment().format('YYYYMMDD') }
+            values: { ...data, create_date: moment().format('YYYYMMDD') },
+            successNotification: {
+                icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                message: 'บันทึกข้อมูลรถยนต์สำเร็จ'
+            },
+            errorNotification: {
+                icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                message: 'บันทึกข้อมูลรถยนต์ไม่สำเร็จ'
+            }
         });
 
         close()

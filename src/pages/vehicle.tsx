@@ -115,7 +115,7 @@ export const VehicleList: React.FC = (props) => {
                             {...tableProps} rowKey="id">
                             <Table.Column dataIndex="picture" title="รูปภาพ"
                                 render={(value) => {
-                                    if (value) {
+                                    if (value[value.length - 1].status !== 'error') {
                                         return <img style={{ width: '48px', height: '48px' }} src={apiUrl + value[0].response[0].url} />
                                         // console.log(value.length);
 

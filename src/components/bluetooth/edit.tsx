@@ -13,7 +13,7 @@ import {
     useTranslate,
     Avatar,
     Typography,
-    Upload,
+    Upload, Icons,
     Grid,
     getValueFromEvent,
     useApiUrl,
@@ -36,17 +36,19 @@ type EditBluetoothProps = {
     drawerProps: DrawerProps;
     formProps: FormProps;
     saveButtonProps: ButtonProps;
-    close: () => void
+    close: () => void;
+    vehicleState: {}[] | undefined
 };
 
 export const EditBluetooth: React.FC<EditBluetoothProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
-    close
+    close,
+    vehicleState
 }) => {
     const update = useUpdate<any>();
-
+    const { Option } = Select;
     const create = useCreate<any>();
     const t = useTranslate();
     const apiUrl = useApiUrl();
@@ -87,12 +89,10 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
         }
         return isJpgOrPng && isLt2M;
     }
-    const { selectProps: categorySelectProps } = useSelect<DataType>({
-        resource: "drivers",
-    });
+
     const [state, setState] = React.useState({ loading: false, imageUrl: null })
-    const OnFinish: any = async (newData: { cancle_date?: string, update_log: {}[]; tel: string, name: string; lastname: string; picture: [{}]; status: string; driver_license: string }) => {
-        // console.log(data);
+    const OnFinish: any = async (newData: { vehicle: any; cancle_date?: string, update_log: {}[]; tel: string, name: string; lastname: string; picture: [{}]; status: string; driver_license: string }) => {
+        newData = { ...newData, vehicle: newData.vehicle.id }
 
         let id: string = formProps.form?.getFieldsValue(true).id
         // console.log(id, apiUrl);
@@ -128,17 +128,33 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
             // console.log(oldData);
             // console.log(newData);
 
+            console.log(newData);
 
             update.mutate({
                 resource: "bluetooths",
                 id: id,
                 values: newData,
-
+                successNotification: {
+                    icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                    message: 'แก้ไขข้อมูลบลูทูธสำเร็จ'
+                },
+                errorNotification: {
+                    icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                    message: 'แก้ไขข้อมูลบลูทูธไม่สำเร็จ'
+                }
             }, {
                 onSuccess: (data: any) => {
                     create.mutate({
                         resource: "tracker-logs",
-                        values: logArr
+                        values: logArr,
+                        successNotification: {
+                            icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
+                            message: 'บันทึกข้อมูลการแก้ไข้บลูทูธสำเร็จ'
+                        },
+                        errorNotification: {
+                            icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
+                            message: 'บันทึกข้อมูลการแก้ไข้บลูทูธไม่สำเร็จ'
+                        }
                     });
 
                 }
@@ -173,15 +189,24 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
 
                     <Form.Item
                         label={t("ทะเบียนรถ")}
-                        name="plate"
+                        name="vehicle"
                         rules={[
                             {
                                 required: true,
                             },
                         ]}
                     >
-                        <Input />
+
+                        <Select>
+                            {
+                                vehicleState?.map((d: any) =>
+                                    <Option value={d.plateNo}>{d.plateNo} </Option>
+                                )
+                            }
+                        </Select>
+                        {/* <Select {...selectProps} /> */}
                     </Form.Item>
+
                     <Form.Item
                         label={t("mac_address")}
                         name="mac_address"

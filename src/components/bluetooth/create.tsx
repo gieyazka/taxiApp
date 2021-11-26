@@ -44,7 +44,7 @@ type CreateBluetoothProps = {
     formProps: FormProps;
     saveButtonProps: ButtonProps;
     vehicleState: {}[] | undefined
-
+    checkBluetooth: () => void
 };
 interface PostUniqueCheckResponse {
     isAvailable: boolean;
@@ -53,7 +53,8 @@ export const CreateBluetooth: React.FC<CreateBluetoothProps> = ({
     drawerProps,
     formProps,
     saveButtonProps,
-    vehicleState
+    vehicleState,
+    checkBluetooth
 }) => {
 
     const { Option } = Select;

@@ -13,6 +13,7 @@ import { Bluetooth } from "./pages/bluetooth";
 import { BookingList } from "./pages/booking";
 import { AuthenticatedCustomPage } from "./pages/dashboard";
 import { DriverReport } from "./pages/report";
+import { VehicleReport } from "./pages/reportVehicle";
 import { BluetoothReport } from "./pages/bluetoothreport";
 import { CustomMenu } from "./components/menu";
 import { Login } from "pages/login";
@@ -48,7 +49,7 @@ function App() {
 
       if (status === 200) {
         localStorage.setItem(TOKEN_KEY, data.jwt);
-      //@ts-ignore
+        //@ts-ignore
         localStorage.setItem("Token", data.user.token?.token);
 
         // set header axios instance
@@ -114,6 +115,10 @@ function App() {
           {
             component: DriverReport,
             path: "/reportdriver",
+          },
+          {
+            component: VehicleReport,
+            path: "/reportvehicle",
           },
           {
             component: BluetoothReport,

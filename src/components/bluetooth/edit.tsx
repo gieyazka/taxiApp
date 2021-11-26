@@ -38,6 +38,7 @@ type EditBluetoothProps = {
     saveButtonProps: ButtonProps;
     close: () => void;
     vehicleState: {}[] | undefined
+    checkBluetooth: () => void
 };
 
 export const EditBluetooth: React.FC<EditBluetoothProps> = ({
@@ -45,7 +46,8 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
     formProps,
     saveButtonProps,
     close,
-    vehicleState
+    vehicleState,
+    checkBluetooth
 }) => {
     const update = useUpdate<any>();
     const { Option } = Select;
@@ -92,14 +94,19 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
 
     const [state, setState] = React.useState({ loading: false, imageUrl: null })
     const OnFinish: any = async (newData: { vehicle: any; cancle_date?: string, update_log: {}[]; tel: string, name: string; lastname: string; picture: [{}]; status: string; driver_license: string }) => {
-        newData = { ...newData, vehicle: newData.vehicle.id }
+
 
         let id: string = formProps.form?.getFieldsValue(true).id
         // console.log(id, apiUrl);
-
+        // return null
 
         await axios.get(apiUrl + `/bluetooths/${id}`).then(async res => {
             let oldData = res.data
+            if (oldData.vahicle && oldData.vehicle.plateNo === newData.vehicle.plateNo) {
+                newData = { ...newData, vehicle: oldData.vehicle.id }
+            } else {
+                newData = { ...newData, vehicle: newData.vehicle.plateNo }
+            }
 
 
 
@@ -128,7 +135,6 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
             // console.log(oldData);
             // console.log(newData);
 
-            console.log(newData);
 
             update.mutate({
                 resource: "bluetooths",
@@ -155,7 +161,13 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
                             icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
                             message: 'บันทึกข้อมูลการแก้ไข้บลูทูธไม่สำเร็จ'
                         }
+                    }, {
+                        onSuccess: (data: any) => {
+                            checkBluetooth()
+                            close()
+                        }
                     });
+
 
                 }
             }
@@ -163,7 +175,6 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
 
 
 
-            close()
 
         })
 
@@ -189,21 +200,31 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
 
                     <Form.Item
                         label={t("ทะเบียนรถ")}
-                        name="vehicle"
+                        // name="vehicle"
+                        name={["vehicle", "plateNo"]}
                         rules={[
                             {
                                 required: true,
                             },
                         ]}
                     >
+                        <Select
+                            showSearch
+                            optionFilterProp="children"
+                            filterOption={(input, option) => {
 
-                        <Select>
+                                return option?.children.indexOf(input) >= 0
+                            }}
+                        >
+
                             {
                                 vehicleState?.map((d: any) =>
-                                    <Option value={d.plateNo}>{d.plateNo} </Option>
+                                    <Option value={d.id}>{d.plateNo}</Option>
                                 )
                             }
                         </Select>
+
+                        {/* <Input /> */}
                         {/* <Select {...selectProps} /> */}
                     </Form.Item>
 
@@ -221,6 +242,7 @@ export const EditBluetooth: React.FC<EditBluetoothProps> = ({
 
 
                 </Form>
+
             </Edit>
         </Drawer>
     );

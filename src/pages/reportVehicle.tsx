@@ -2,7 +2,7 @@
 
 import {
     Button, Typography, Row, Col, Refine, useApiUrl, Authenticated, AuthProvider, LayoutWrapper, useSelect
-    , DatePicker, Table, List, Tag, Select
+    , DatePicker, Table, List, Tag
 } from "@pankod/refine";
 import React from 'react'
 import {
@@ -15,64 +15,27 @@ import { ColumnsType } from 'antd/es/table';
 import { json2csv } from "json-2-csv";
 //@ts-ignore
 import ReactExport from 'react-data-export';
-import axios from 'axios'
 
-interface driver {
+
+interface vehicle {
     create_date: string;
-    driver_license: string;
+    cancle_date: string;
+    plateNo: string;
     id: string;
     picture: [];
-    name: string;
-    lastname: string;
+    province: string;
     status: string;
-    username: string
     length: number
 }
-interface driverState {
+interface vehicleState {
     startDate?: string;
     endDate?: string;
     data: any
 }
-const Bluetooth_Report = () => {
+const Vehicle = () => {
     const apiUrl = useApiUrl();
-
-    const { Option } = Select
-    const [vehicleState, setVehicleState] = React.useState<{}[]>()
-    React.useMemo(async () => {
-        await axios.get(apiUrl + `/vehicles?token=${localStorage.getItem('Token')}`).then(async res => {
-            // res.data.map((d : any) => console.log(d.plateNo,d.bluetooth))
-
-            setVehicleState(res.data);
-            // setVehicleState(res.data);
-
-        })
-    }, [])
-    React.useEffect(() => {
-        var details: any = {
-            'vehiclesID[0]': 'S6106021420151',
-            'vehiclesID[1]': 't1'
-            // 'vehiclesID[]': 't1',
-
-        };
-        var formBody: any = [];
-        for (var property in details) {
-            var encodedKey = encodeURIComponent(property);
-            var encodedValue = encodeURIComponent(details[property]);
-            formBody.push(encodedKey + "=" + encodedValue);
-        }
-        formBody = formBody.join("&");
-        fetch('https://gps.powermap.live/api/taxitracker/get.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            body: formBody
-        }).then(res => res.json()).then(data => console.log(data))
-
-
-    }, [])
     const { Text, Title } = Typography
-    const [driverState, setDriverState] = React.useState<driverState>()
+    const [driverState, setDriverState] = React.useState<vehicleState>()
     const [carState, setCarState] = React.useState<{ approve: number, block: number }>()
     const [dateState, setdateState] = React.useState<{ startDate?: string, endDate?: string }>()
     const ExcelFile = ReactExport.ExcelFile;
@@ -118,9 +81,9 @@ const Bluetooth_Report = () => {
             });
             return null
         }
-        fetch(`${apiUrl}/drivers?token=test01&create_date_gte=${startDate}&create_date_lte=${endDate}`)
+        fetch(`${apiUrl}/vehicles?token=${localStorage.getItem('Token')}&create_date_gte=${startDate}&create_date_lte=${endDate}`)
             .then(response => response.json())
-            .then((data: driver) => {
+            .then((data: vehicle) => {
                 setDriverState({
                     startDate: moment(startDate, 'YYYYMMDD').format('DD/MM/YYYY'),
                     endDate: moment(endDate, 'YYYYMMDD').format('DD/MM/YYYY'),
@@ -165,38 +128,29 @@ const Bluetooth_Report = () => {
 
                         width: { wpx: 200 },
                     },
-                    {
-                        title: 'ชื่อผู้ใช้',
-                        style: style,
 
-                        width: { wpx: 80 },
-                    }, //pixels width
                     {
-                        title: 'ชื่อ',
+                        title: 'ทะเบียนรถ',
                         width: { wpx: 90 },
                         style: style,
                     }, //char width
                     {
-                        title: 'นามสกุล',
+                        title: 'จังหวัด',
                         width: { wpx: 90 },
                         style: style,
                     }, //char width
 
                     {
-                        title: 'เลขที่ใบขับขี่',
+                        title: 'วันที่ลงทะเบียน',
                         width: { wpx: 90 },
                         style: style,
                     }, //char width 
                     {
-                        title: 'เบอร์โทรศัพท์',
+                        title: 'สถานะ',
                         width: { wpx: 90 },
                         style: style,
                     }, //char width
-                    {
-                        title: 'วันที่บันทึก',
-                        width: { wpx: 90 },
-                        style: style,
-                    }, //char width
+
                 ]
 
 
@@ -204,13 +158,11 @@ const Bluetooth_Report = () => {
                 data.map((d, i) => {
                     destArr = [
                         { value: i + 1, style: styleNoColor },
-                        { value: d.username, style: styleNoColor },
-                        { value: d.name || '', style: styleNoColor },
-                        { value: d.lastname || '', style: styleNoColor },
-                        { value: d.driver_license || '', style: styleNoColor },
-                        { value: d.tel || '', style: styleNoColor },
+                        // { value: d.username, style: styleNoColor },
+                        { value: d.plateNo || '', style: styleNoColor },
+                        { value: d.province || '', style: styleNoColor },
                         { value: moment(d.create_date, 'YYYYMMDD').format('DD/MM/YYYY') || '', style: styleNoColor },
-
+                        { value: d.status || '', style: styleNoColor },
 
                     ];
 
@@ -244,24 +196,6 @@ const Bluetooth_Report = () => {
     return (
         <div style={{}}>
             <div style={{ display: 'flex', justifyContent: "end", marginRight: 12, marginBottom: 12 }}>
-
-                <div style={{ marginRight: 12 }}>
-                    <Select
-                        mode='multiple'
-                        showSearch
-                        style={{ width: 200 }}
-                        placeholder="เลือกทะเบียนรถ"
-                        optionFilterProp="children"
-
-                        filterOption={(input, option) =>
-                            option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                    >
-                        <Option value="jack">Jack</Option>
-                        <Option value="lucy">Lucy</Option>
-                        <Option value="tom">Tom</Option>
-                    </Select>,
-                </div>
                 <div style={{ marginRight: 12 }}>
 
                     <DatePicker
@@ -284,19 +218,19 @@ const Bluetooth_Report = () => {
 
                                 <div>
 
-                                    <Text style={{ fontSize: '1.5em' }}>รายการผู้ขับรถที่สมัครวันที่ {driverState?.startDate} - {driverState?.endDate}</Text> <br />
+                                    <Text style={{ fontSize: '1.5em' }}>รายการรถยนต์ที่ลงทะเบียนวันที่ {driverState?.startDate} - {driverState?.endDate}</Text> <br />
 
                                     <br />
                                     <Text style={{ fontSize: '2em', textAlign: 'left' }}>{driverState?.data.length}</Text>
                                     &nbsp;
 
                                 </div>
-                                <img style={{ width: '96px' }} src="/images/driver1.png" />
+                                <img style={{ width: '128px' }} src="/images/taxi.png" />
 
                             </div>
                         </Col>
                         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                            <Text style={{ fontSize: '1.5em' }}>ข้อมูลคนขับรถ</Text>
+                            <Text style={{ fontSize: '1.5em' }}>ข้อมูลรถยนต์</Text>
                             <ExcelFile
                                 element={<Button style={{ marginLeft: 12 }}
                                     type="primary">ดาวน์โหลด</Button>}
@@ -315,12 +249,12 @@ const Bluetooth_Report = () => {
 
 
                         <Col span={24}>
-                            <Table<driver>
+                            <Table<vehicle>
 
                                 rowKey="id" dataSource={driverState.data} bordered={true}   >
                                 <Table.Column dataIndex="picture" title="รูปภาพ"
                                     render={(value) => {
-                                        if (value) {
+                                        if (value && value[value.length - 1].status !== 'error') {
                                             // console.log();
                                             return <img style={{ width: '48px', height: '48px' }} src={apiUrl + value[value.length - 1].response[0].url} />
                                             // console.log(value.length);
@@ -336,34 +270,19 @@ const Bluetooth_Report = () => {
 
 
                                 />
-                                <Table.Column dataIndex="username" title="ชื่อผู้ใช้งาน"
-                                    render={(value) => value}
-
-
-                                />
-                                <Table.Column dataIndex="name" title="ชื่อ"
+                      
+                                <Table.Column dataIndex="plateNo" title="ทะเบียนรถ"
                                     render={(value) => value}
 
 
                                 />
                                 <Table.Column
-                                    dataIndex="lastname"
-                                    title="นามสกุล"
+                                    dataIndex="province"
+                                    title="จังหวัด"
                                     render={(value) => value}
 
                                 />
-                                <Table.Column
-                                    dataIndex="driver_license"
-                                    title="เลขใบขับขี่"
-                                    render={(value) => value}
-
-                                />
-                                <Table.Column
-                                    dataIndex="tel"
-                                    title="เบอร์โทรศัพท์"
-                                    render={(value) => value}
-
-                                />
+                        
                                 <Table.Column
                                     dataIndex="create_date"
                                     title="วันที่บันทึก"
@@ -389,11 +308,11 @@ const Bluetooth_Report = () => {
     )
 }
 
-export const BluetoothReport = () => {
+export const VehicleReport = () => {
     return (
         <Authenticated>
             <LayoutWrapper>
-                <Bluetooth_Report />
+                <Vehicle />
             </LayoutWrapper>
         </Authenticated>
     );

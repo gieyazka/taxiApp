@@ -17,6 +17,7 @@ import React from "react";
 import { CreateBluetooth } from "components/bluetooth/create"
 import { EditBluetooth } from "components/bluetooth/edit"
 export const Bluetooth: React.FC = (props) => {
+
     const { RangePicker } = DatePicker;
     const { tableProps, searchFormProps } = useTable<DataType, HttpError, { name: string, mac: string }>({
         onSearch: (params) => {
@@ -54,7 +55,10 @@ export const Bluetooth: React.FC = (props) => {
 
     React.useMemo(async () => {
         await axios.get(apiUrl + `/vehicles?token=${localStorage.getItem('Token')}`).then(async res => {
-            setVehicleState(res.data.filter((d : any )=> !d.bluetooth));
+            // res.data.map((d : any) => console.log(d.plateNo,d.bluetooth))
+
+            setVehicleState(res.data.filter((d: any) => !d.bluetooth));
+            // setVehicleState(res.data);
 
         })
     }, [])
@@ -69,6 +73,7 @@ export const Bluetooth: React.FC = (props) => {
         action: "create",
         resource: "bluetooths",
         redirect: false,
+        onMutationSuccess: () => checkBluetooth(),
         successNotification: {
             icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
             message: 'บันทึกข้อมูลบลูทูธสำเร็จ'
@@ -90,8 +95,17 @@ export const Bluetooth: React.FC = (props) => {
         action: "edit",
         resource: "bluetooths",
         redirect: false,
+        metaData: { fields: ['test1', 'test2'] }
     });
+    const checkBluetooth = async () => {
+        
+        await axios.get(apiUrl + `/vehicles?token=${localStorage.getItem('Token')}`).then(async res => {
+            setVehicleState(res.data.filter((d: any) => !d.bluetooth));
+            // setVehicleState(res.data);
 
+        })
+
+    }
     // rowSelection object indicates the need for row selection
     const rowSelection = {
         onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
@@ -141,12 +155,15 @@ export const Bluetooth: React.FC = (props) => {
 
                             /> */}
                             <Table.Column
-                                dataIndex="vehicle"
+                                // dataIndex="vehicle"
+                                dataIndex={["vehicle", "plateNo"]}
                                 title="ทะเบียนรถ"
                                 render={(value) => {
+
+
                                     // console.log(value.plateNo)
-                                    if (value && value.plateNo !== null && value.plateNo !== undefined) {
-                                        return value.plateNo
+                                    if (value) {
+                                        return value
                                     } else {
                                         return " - "
 
@@ -179,12 +196,14 @@ export const Bluetooth: React.FC = (props) => {
                 </Col>
             </Row>
             <CreateBluetooth
+                checkBluetooth={checkBluetooth}
                 vehicleState={vehicleState}
                 drawerProps={createDrawerProps}
                 formProps={createFormProps}
                 saveButtonProps={createSaveButtonProps}
             />
             <EditBluetooth
+                checkBluetooth={checkBluetooth}
                 vehicleState={vehicleState}
                 close={handleClose}
                 drawerProps={editDrawerProps}

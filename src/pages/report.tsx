@@ -129,12 +129,12 @@ const Driver = () => {
 
                         width: { wpx: 200 },
                     },
-                    {
-                        title: 'ชื่อผู้ใช้',
-                        style: style,
+                    // {
+                    //     title: 'ชื่อผู้ใช้',
+                    //     style: style,
 
-                        width: { wpx: 80 },
-                    }, //pixels width
+                    //     width: { wpx: 80 },
+                    // }, //pixels width
                     {
                         title: 'ชื่อ',
                         width: { wpx: 90 },
@@ -157,7 +157,12 @@ const Driver = () => {
                         style: style,
                     }, //char width
                     {
-                        title: 'วันที่บันทึก',
+                        title: 'วันที่ลงทะเบียน',
+                        width: { wpx: 90 },
+                        style: style,
+                    }, //char width
+                    {
+                        title: 'สถานะ',
                         width: { wpx: 90 },
                         style: style,
                     }, //char width
@@ -168,13 +173,13 @@ const Driver = () => {
                 data.map((d, i) => {
                     destArr = [
                         { value: i + 1, style: styleNoColor },
-                        { value: d.username, style: styleNoColor },
+                        // { value: d.username, style: styleNoColor },
                         { value: d.name || '', style: styleNoColor },
                         { value: d.lastname || '', style: styleNoColor },
                         { value: d.driver_license || '', style: styleNoColor },
                         { value: d.tel || '', style: styleNoColor },
                         { value: moment(d.create_date, 'YYYYMMDD').format('DD/MM/YYYY') || '', style: styleNoColor },
-
+                        { value: d.status || '', style: styleNoColor },
 
                     ];
 
@@ -230,7 +235,7 @@ const Driver = () => {
 
                                 <div>
 
-                                    <Text style={{ fontSize: '1.5em' }}>รายการผู้ขับรถที่สมัครวันที่ {driverState?.startDate} - {driverState?.endDate}</Text> <br />
+                                    <Text style={{ fontSize: '1.5em' }}>รายการผู้ขับรถที่ลงทะเบียนวันที่ {driverState?.startDate} - {driverState?.endDate}</Text> <br />
 
                                     <br />
                                     <Text style={{ fontSize: '2em', textAlign: 'left' }}>{driverState?.data.length}</Text>

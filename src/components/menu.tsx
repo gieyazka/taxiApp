@@ -64,10 +64,10 @@ export const CustomMenu: React.FC = () => {
                     >
                         <Link to={'reportbluetooth'}>รายงานผู้ขับรถ</Link>
                     </Menu.Item> */}
-                    <Menu.SubMenu key="sub1"  icon={<img style={{ width: 18 }} src='/images/icon/reportDriver.png' />} title="รายงานข้อมูล">
-                        <Menu.Item key="reportdriver">รายงานผู้ขับรถ</Menu.Item>
-                        <Menu.Item key="reportvehicle">รายงานรถยนต์</Menu.Item>
-                        <Menu.Item key="reportbluetooth">รายงานการ</Menu.Item>
+                    <Menu.SubMenu key="sub1"  icon={<img style={{ width: 18 }} src='/images/icon/reportDriver.png' />} title="รายงาน">
+                        <Menu.Item icon={<img style={{ width: 18 }} src='/images/icon/reportDriver.png' />} key="reportdriver">ผู้ขับรถ</Menu.Item>
+                        <Menu.Item icon={<img style={{ width: 18 }} src='/images/icon/reportDriver.png' />} key="reportvehicle">รถยนต์</Menu.Item>
+                        <Menu.Item icon={<img style={{ width: 18 }} src='/images/icon/reportDriver.png' />} key="reportbluetooth">การไม่แสดงตัวตน</Menu.Item>
                
                     </Menu.SubMenu>
                     <Menu.Item key={'logout'} icon={<LogoutOutlined />}>

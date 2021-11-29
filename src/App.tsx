@@ -145,28 +145,28 @@ function App() {
           name: "drivers",
           list: PostList,
           icon: <img src='/images/icon/driver.png' />,
-          options: { label: "รายการผู้ขับ", route: "drivers" }
+          options: { label: "ข้อมูลผู้ขับ", route: "drivers" }
 
         },
         {
           name: "vehicles",
           list: VehicleList,
           icon: <img src='/images/icon/car.png' />,
-          options: { label: "รายการรถ" }
+          options: { label: "ข้อมูลรถ" }
 
         },
         {
           name: "users",
           list: UserList,
           icon: <img src='/images/icon/user.png' />,
-          options: { label: "รายการผู้ใช้งาน" }
+          options: { label: "ข้อมูลผู้ใช้งาน" }
 
         },
         {
           name: "bluetooths",
           list: Bluetooth,
           icon: <img style={{ width: 18 }} src='/images/icon/bluetoothIcon.png' />,
-          options: { label: "รายการบลูทูธ" }
+          options: { label: "ข้อมูลบลูทูธ" }
 
         },
       ]}

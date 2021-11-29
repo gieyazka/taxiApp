@@ -37,7 +37,11 @@ const Bluetooth_Report = () => {
     const apiUrl = useApiUrl();
 
     const { Option } = Select
-    const [vehicleState, setVehicleState] = React.useState<{}[]>()
+    const [vehicleState, setVehicleState] = React.useState<{ province: string, plateNo: string, id: string, bluetooth?: { mac_address: string } }[]>()
+    const [historyData, setHistoryData] = React.useState<{
+        car: any,
+        data: any
+    }>()
     React.useMemo(async () => {
         await axios.get(apiUrl + `/vehicles?token=${localStorage.getItem('Token')}`).then(async res => {
             // res.data.map((d : any) => console.log(d.plateNo,d.bluetooth))
@@ -47,41 +51,30 @@ const Bluetooth_Report = () => {
 
         })
     }, [])
-    React.useEffect(() => {
-        var details: any = {
-            'vehiclesID[0]': 'S6106021420151',
-            'vehiclesID[1]': 't1'
-            // 'vehiclesID[]': 't1',
 
-        };
-        var formBody: any = [];
-        for (var property in details) {
-            var encodedKey = encodeURIComponent(property);
-            var encodedValue = encodeURIComponent(details[property]);
-            formBody.push(encodedKey + "=" + encodedValue);
-        }
-        formBody = formBody.join("&");
-        fetch('https://gps.powermap.live/api/taxitracker/get.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            body: formBody
-        }).then(res => res.json()).then(data => console.log(data))
-
-
-    }, [])
     const { Text, Title } = Typography
     const [driverState, setDriverState] = React.useState<driverState>()
     const [carState, setCarState] = React.useState<{ approve: number, block: number }>()
-    const [dateState, setdateState] = React.useState<{ startDate?: string, endDate?: string }>()
+    const [dateState, setdateState] = React.useState<{ plate?: string, startDate?: string, endDate?: string }>()
     const ExcelFile = ReactExport.ExcelFile;
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const [exportExcel, setExportExcel] = React.useState<{ status: boolean, data?: {}[] }>({ status: false });
 
+    const genData = (plate: string | undefined, start: string | undefined, end: string | undefined) => {
+        // console.log(plate, start, end);
 
-    const genReport = (startDate: string | undefined, endDate: string | undefined) => {
-        if (!startDate || startDate === 'Invalid date') {
+        if (!plate) {
+            Swal.fire({
+                icon: "info",
+                title: "กรุณาเลือกทะเบียนรถ",
+                showConfirmButton: false,
+                timer: 1500,
+            }).then(() => {
+                // form.resetFields()
+
+            });
+            return null
+        } else if (!start || start === 'Invalid date') {
             Swal.fire({
                 icon: "info",
                 title: "กรุณาเลือกวันที่เริ่มต้น",
@@ -92,8 +85,7 @@ const Bluetooth_Report = () => {
 
             });
             return null
-        }
-        if (!endDate || endDate === 'Invalid date') {
+        } else if (!end || end === 'Invalid date') {
             Swal.fire({
                 icon: "info",
                 title: "กรุณาเลือกวันที่สิ้นสุด",
@@ -104,28 +96,42 @@ const Bluetooth_Report = () => {
 
             });
             return null
-        }
-
-        if (parseInt(startDate) > parseInt(endDate)) {
+        } else if (start > end) {
             Swal.fire({
-                icon: "info",
+                icon: "error",
                 title: "วันที่ไม่ถูกต้อง",
                 showConfirmButton: false,
                 timer: 1500,
-            }).then(() => {
-                // form.resetFields()
-
-            });
+            })
             return null
-        }
-        fetch(`${apiUrl}/drivers?token=test01&create_date_gte=${startDate}&create_date_lte=${endDate}`)
-            .then(response => response.json())
-            .then((data: driver) => {
-                setDriverState({
-                    startDate: moment(startDate, 'YYYYMMDD').format('DD/MM/YYYY'),
-                    endDate: moment(endDate, 'YYYYMMDD').format('DD/MM/YYYY'),
-                    data: data
-                });
+        } else {
+            var details: any = {
+                'vehiclesID[]': plate,
+                'start': moment(start, 'YYYYMMDD').format('YYYY-MM-DD 00:00:00'),
+                'end': moment(end, 'YYYYMMDD').format('YYYY-MM-DD 00:00:00')
+                // 'vehiclesID[]': 't1',
+
+            };
+
+            var formBody: any = [];
+            for (var property in details) {
+                var encodedKey = encodeURIComponent(property);
+                var encodedValue = encodeURIComponent(details[property]);
+                formBody.push(encodedKey + "=" + encodedValue);
+            }
+            formBody = formBody.join("&");
+            fetch('https://gps.powermap.live/api/taxitracker/get.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: formBody
+            }).then(res => res.json()).then(data => {
+                let logOutData = data[0].location.filter((d: { status: string }) => d.status === 'logout')
+                let vehicle: { plateNo: string, province: string } | undefined = vehicleState?.find(d => (d.bluetooth?.mac_address === plate))
+                console.log(logOutData);
+
+                setHistoryData({ car: vehicle, data: logOutData })
                 const borders = {
                     top: { style: 'thin' },
                     bottom: { style: 'thin' },
@@ -166,50 +172,51 @@ const Bluetooth_Report = () => {
                         width: { wpx: 200 },
                     },
                     {
-                        title: 'ชื่อผู้ใช้',
+                        title: 'วันที่',
                         style: style,
 
                         width: { wpx: 80 },
                     }, //pixels width
                     {
-                        title: 'ชื่อ',
+                        title: 'ทะเบียนรถ',
                         width: { wpx: 90 },
                         style: style,
                     }, //char width
                     {
-                        title: 'นามสกุล',
+                        title: 'จังหวัด',
                         width: { wpx: 90 },
                         style: style,
                     }, //char width
 
                     {
-                        title: 'เลขที่ใบขับขี่',
+                        title: 'เวลาเริ่ม',
                         width: { wpx: 90 },
                         style: style,
                     }, //char width 
                     {
-                        title: 'เบอร์โทรศัพท์',
+                        title: 'เวลาสิ้นสุด',
                         width: { wpx: 90 },
                         style: style,
                     }, //char width
                     {
-                        title: 'วันที่บันทึก',
-                        width: { wpx: 90 },
+                        title: 'ระยะเวลาที่ไม่แสดงตัวตน',
+                        width: { wpx: 180 },
                         style: style,
                     }, //char width
                 ]
 
 
                 //@ts-ignore
-                data.map((d, i) => {
+                logOutData.map((d, i) => {
+
                     destArr = [
                         { value: i + 1, style: styleNoColor },
-                        { value: d.username, style: styleNoColor },
-                        { value: d.name || '', style: styleNoColor },
-                        { value: d.lastname || '', style: styleNoColor },
-                        { value: d.driver_license || '', style: styleNoColor },
-                        { value: d.tel || '', style: styleNoColor },
-                        { value: moment(d.create_date, 'YYYYMMDD').format('DD/MM/YYYY') || '', style: styleNoColor },
+                        { value: d.start.split(" ")[0], style: styleNoColor },
+                        { value: vehicle?.plateNo || '', style: styleNoColor },
+                        { value: vehicle?.province || '', style: styleNoColor },
+                        { value: d.start.split(" ")[1] || '', style: styleNoColor },
+                        { value: d.stop.split(" ")[1] || '', style: styleNoColor },
+                        { value: d.time || '', style: styleNoColor },
 
 
                     ];
@@ -234,7 +241,12 @@ const Bluetooth_Report = () => {
 
             });
 
+
+
+
+        }
     }
+
 
     React.useEffect(() => {
         if (exportExcel.status === true) {
@@ -247,7 +259,7 @@ const Bluetooth_Report = () => {
 
                 <div style={{ marginRight: 12 }}>
                     <Select
-                        mode='multiple'
+                        // mode='multiple'
                         showSearch
                         style={{ width: 200 }}
                         placeholder="เลือกทะเบียนรถ"
@@ -256,11 +268,19 @@ const Bluetooth_Report = () => {
                         filterOption={(input, option) =>
                             option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
+                        onChange={(d: string) => setdateState({ ...dateState, plate: d })
+
+                        }
                     >
-                        <Option value="jack">Jack</Option>
-                        <Option value="lucy">Lucy</Option>
-                        <Option value="tom">Tom</Option>
-                    </Select>,
+                        {
+                            vehicleState?.map((d: { plateNo: string, bluetooth?: { mac_address: string } }) =>
+
+                                d.bluetooth && <Option value={d.bluetooth?.mac_address}>{d.plateNo}</Option>
+
+                            )
+                        }
+
+                    </Select>
                 </div>
                 <div style={{ marginRight: 12 }}>
 
@@ -274,12 +294,14 @@ const Bluetooth_Report = () => {
                     onChange={((date, dateString) => setdateState({ ...dateState, endDate: moment(dateString, 'YYYY-MM-DD').format('YYYYMMDD') })
                     )}
                 />
-                <Button style={{ marginLeft: 12 }} onClick={() => genReport(dateState?.startDate, dateState?.endDate)} type="primary">ค้นหา</Button>
+                <Button style={{ marginLeft: 12 }}
+                    onClick={() => genData(dateState?.plate, dateState?.startDate, dateState?.endDate)}
+                    type="primary">ค้นหา</Button>
             </div>
             <Row gutter={[0, 24]}>
-                {driverState &&
+                {historyData &&
                     <>
-                        <Col span={24}>
+                        {/* <Col span={24}>
                             <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', marginLeft: "auto", marginRight: 'auto', borderRadius: 20, padding: 24, backgroundColor: '#A7F3D0' }}>
 
                                 <div>
@@ -294,7 +316,7 @@ const Bluetooth_Report = () => {
                                 <img style={{ width: '96px' }} src="/images/driver1.png" />
 
                             </div>
-                        </Col>
+                        </Col> */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                             <Text style={{ fontSize: '1.5em' }}>ข้อมูลคนขับรถ</Text>
                             <ExcelFile
@@ -313,68 +335,76 @@ const Bluetooth_Report = () => {
 
                         </div>
 
-
                         <Col span={24}>
                             <Table<driver>
 
-                                rowKey="id" dataSource={driverState.data} bordered={true}   >
-                                <Table.Column dataIndex="picture" title="รูปภาพ"
+                                rowKey="id" dataSource={historyData.data} bordered={true}   >
+
+                                <Table.Column dataIndex="start" title="วันที่"
+                                    render={(value) => moment(value, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY')}
+
+
+                                />
+                                <Table.Column title="ทะเบียนรถ"
+                                    render={() => historyData.car?.plateNo}
+
+
+                                />
+                                <Table.Column title="ทะเบียนรถ"
+                                    render={() => historyData.car?.province}
+
+
+                                />
+                                <Table.Column
+                                    dataIndex="start"
+                                    title="เวลาเริ่ม"
+                                    render={(value) => moment(value, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')}
+
+                                />
+                                <Table.Column
+                                    dataIndex="stop"
+                                    title="เวลาสิ้นสุด"
+                                    render={(value) => moment(value, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')}
+
+                                />
+                                <Table.Column
+                                    dataIndex="time"
+                                    title="ระยะเวลาที่ไม่แสดงตัว"
                                     render={(value) => {
-                                        if (value) {
-                                            // console.log();
-                                            return <img style={{ width: '48px', height: '48px' }} src={apiUrl + value[value.length - 1].response[0].url} />
-                                            // console.log(value.length);
+                                        let date = value.split(" ")[0]
+                                        let year = parseInt(date.split("-")[0])
+                                        let month = parseInt(date.split("-")[1])
+                                        let day = parseInt(date.split("-")[2])
+                                        let time = value.split(" ")[1]
 
-                                        } else
-                                            return <div>
+                                        let hr = parseInt(time.split(':')[0])
+                                        let min = parseInt(time.split(':')[1])
+                                        let sec = parseInt(time.split(':')[2])
 
-                                                <img style={{ width: '48px', height: '48px' }} src='/images/default_user.png' />
-                                            </div>
-                                    }
-
-                                    }
-
-
-                                />
-                                <Table.Column dataIndex="username" title="ชื่อผู้ใช้งาน"
-                                    render={(value) => value}
-
-
-                                />
-                                <Table.Column dataIndex="name" title="ชื่อ"
-                                    render={(value) => value}
-
-
-                                />
-                                <Table.Column
-                                    dataIndex="lastname"
-                                    title="นามสกุล"
-                                    render={(value) => value}
-
-                                />
-                                <Table.Column
-                                    dataIndex="driver_license"
-                                    title="เลขใบขับขี่"
-                                    render={(value) => value}
+                                        let newStr: string = ""
+                                        if (year !== 0) {
+                                            newStr = year + " ปี "
+                                        }
+                                        if (month !== 0) {
+                                            newStr = month + " เดือน "
+                                        }
+                                        if (day !== 0) {
+                                            newStr = day + " วัน "
+                                        }
+                                        if (hr !== 0) {
+                                            newStr = hr + " ชั่วโมง "
+                                        }
+                                        if (min !== 0) {
+                                            newStr = min + " นาที "
+                                        }
+                                        if (sec !== 0) {
+                                            newStr = sec + " วินาที "
+                                        }
+                                        return newStr
+                                    }}
 
                                 />
-                                <Table.Column
-                                    dataIndex="tel"
-                                    title="เบอร์โทรศัพท์"
-                                    render={(value) => value}
 
-                                />
-                                <Table.Column
-                                    dataIndex="create_date"
-                                    title="วันที่บันทึก"
-                                    render={(value) => moment(value, 'YYYYMMDD').format('DD/MM/YYYY')}
-                                />
-                                <Table.Column
-                                    dataIndex="status"
-                                    title="สถานะ"
-                                    render={(value) => value === 'block' ? <Tag color="error">บล็อค</Tag> : value === 'approve' ? <Tag color="success">อนุมัติ</Tag> : <Tag color="default">ยกเลิก</Tag>}
-
-                                />
 
                             </Table>
                         </Col>

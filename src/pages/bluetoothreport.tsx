@@ -318,7 +318,7 @@ const Bluetooth_Report = () => {
                             </div>
                         </Col> */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                            <Text style={{ fontSize: '1.5em' }}>ข้อมูลคนขับรถ</Text>
+                            <Text style={{ fontSize: '1.5em' }}>ข้อมูลการไม่แสดงตัวตน</Text>
                             <ExcelFile
                                 element={<Button style={{ marginLeft: 12 }}
                                     type="primary">ดาวน์โหลด</Button>}

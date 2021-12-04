@@ -13,6 +13,7 @@
     "@testing-library/react": "^11.2.6",
     "@testing-library/user-event": "^12.8.3",
     "@types/jest": "^26.0.23",
+    "@types/lodash": "^4.14.177",
     "@types/node": "^12.20.10",
     "@types/react": "^17.0.4",
     "@types/react-dom": "^17.0.3",
@@ -22,6 +23,7 @@
     "i18next-xhr-backend": "^3.2.2",
     "json-2-csv": "^3.14.4",
     "json2csv": "^5.0.6",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "react": "^17.0.2",
     "react-data-export": "^0.6.0",
@@ -59,5 +61,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {}
 }

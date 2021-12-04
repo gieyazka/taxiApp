@@ -153,7 +153,7 @@ export const CreateUser: React.FC<CreateUserProps> = ({
 
                             <Upload.Dragger
                                 name="files"
-                                action={`${apiUrl}/upload?token=test01`}
+                                action={`${apiUrl}/upload?token=${localStorage.getItem('Token')}`}
                                 listType="picture"
                                 maxCount={1}
                                 accept=".png"

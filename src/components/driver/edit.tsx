@@ -21,7 +21,8 @@ import {
     useSelect,
     useCreate,
     useUpdate,
-    useResource
+    useResource,
+    DatePicker
 } from "@pankod/refine";
 import React from 'react'
 import axios from 'axios'
@@ -101,8 +102,8 @@ export const EditDriver: React.FC<EditDriverProps> = ({
 
     const onFinish: any = async (newData: { cancle_date?: string, update_log: {}[]; tel: string, name: string; lastname: string; picture: [{}]; status: string; driver_license: string }) => {
         // console.log(data);
-        console.log(newData.status);
-
+        console.log(newData);
+        return null
         let id: string = formProps.form?.getFieldsValue(true).id
         // console.log(id, apiUrl);
 
@@ -163,7 +164,7 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                     id: id,
                     values: newData,
                     successNotification: {
-                        icon: <Icons.CheckCircleTwoTone  twoToneColor="#52c41a" />,
+                        icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
                         message: 'แก้ไขข้อมูลผู้ขับรถสำเร็จ'
                     },
                     errorNotification: {
@@ -176,7 +177,7 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                             resource: "tracker-logs",
                             values: logArr,
                             successNotification: {
-                                icon: <Icons.CheckCircleTwoTone  twoToneColor="#52c41a" />,
+                                icon: <Icons.CheckCircleTwoTone twoToneColor="#52c41a" />,
                                 message: 'บันทึกข้อมูลการแก้ไข้ผู้ขับรถสำเร็จ'
                             },
                             errorNotification: {
@@ -239,7 +240,7 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                                 listType="picture"
                                 className="avatar-uploader"
                                 showUploadList={false}
-                                action={`${apiUrl}/upload?token=test01`}
+                                action={`${apiUrl}/upload?token=${localStorage.getItem('Token')}`}
                                 beforeUpload={beforeUpload}
                                 onChange={handleChange}
                             >
@@ -254,7 +255,7 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                             </Upload> */}
                             <Upload.Dragger
                                 name="files"
-                                action={`${apiUrl}/upload?token=test01`}
+                                action={`${apiUrl}/upload?token=${localStorage.getItem('Token')}`}
 
                                 listType="picture"
                                 maxCount={1}
@@ -264,6 +265,25 @@ export const EditDriver: React.FC<EditDriverProps> = ({
                                 </p>
                             </Upload.Dragger>
                         </Form.Item>
+                    </Form.Item>
+                    <Form.Item
+                        label={t("วันหมดอายุบัตรประชาชน")}
+                        name="expire_card_id"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        getValueProps={(value) => ({
+                            value: value ? moment(value, 'YYYYMMDD') : "",
+                        })}
+                     
+                    >
+
+                         <DatePicker
+                            // format={'YYYYMMDD'}
+                            style={{ width: '100%' }} /> 
+                        {/* <Input /> */}
                     </Form.Item>
                     <Form.Item
                         label={t("ชื่อผู้ขับ")}

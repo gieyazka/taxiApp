@@ -15,9 +15,23 @@ import React from "react";
 import { CreateVehicle } from "components/vehicle/create"
 import { EditVehicle } from "components/vehicle/edit"
 import moment from 'moment'
+import axios from "axios";
 export const VehicleList: React.FC = (props) => {
     const apiUrl = useApiUrl();
 
+    const [brandState, setBrandState] = React.useState<{ id: string, brand: string, model: string }[]>()
+    React.useMemo(async () => {
+        await axios.get(`${apiUrl}/band-cars?token=${localStorage.getItem('Token')}`).then(res => {
+            setBrandState(res.data);
+
+        })
+    }, [])
+    const handleBradeState = async () => {
+        await axios.get(`${apiUrl}/band-cars?token=${localStorage.getItem('Token')}`).then(res => {
+            setBrandState(res.data);
+
+        })
+    }
     const { RangePicker } = DatePicker;
     const { Text } = Typography;
     const { tableProps, searchFormProps } = useTable<DataType, HttpError, { name: string }>({
@@ -142,6 +156,60 @@ export const VehicleList: React.FC = (props) => {
                                 sorter
                             />
                             <Table.Column
+                                dataIndex="identification_number"
+                                title="หมายเลขตัวถัง"
+                                render={(value) => value}
+                                sorter
+                            />
+                            <Table.Column
+                                dataIndex="motor_no"
+                                title="หมายเลขมอเตอร์"
+                                render={(value) => value}
+                                sorter
+                            />
+                            <Table.Column
+                                dataIndex="car_brand"
+                                title="ยี่ห้อรถยนต์"
+                                render={(value) => value}
+                                sorter
+                            />
+                            <Table.Column
+                                dataIndex="car_model"
+                                title="รุ่นรถยนต์"
+                                render={(value) => value}
+                                sorter
+                            />
+                            <Table.Column
+                                dataIndex="type_car"
+                                title="ลักษณะรถยนต์"
+                                render={(value) => value}
+                                sorter
+                            />
+                            <Table.Column
+                                dataIndex="year_cae"
+                                title="ปีรถ"
+                                render={(value) => value}
+                                sorter
+                            />
+                            <Table.Column
+                                dataIndex="cc"
+                                title="ซีซีรถ"
+                                render={(value) => value}
+                                sorter
+                            />
+                            <Table.Column
+                                dataIndex="insurance_type"
+                                title="ระดับประกันภัย"
+                                render={(value) => value}
+                                sorter
+                            />
+                            <Table.Column
+                                dataIndex="power_type"
+                                title="การใช้พลังงาน"
+                                render={(value) => value}
+                                sorter
+                            />
+                            <Table.Column
                                 dataIndex="create_date"
                                 title="วันที่บันทึก"
                                 render={(value) => moment(value, 'YYYYMMDD').format('DD/MM/YYYY')}
@@ -186,12 +254,16 @@ export const VehicleList: React.FC = (props) => {
                 </Col>
             </Row>
             <CreateVehicle
+                handleBradeState={handleBradeState}
+                brandState={brandState}
                 drawerProps={createDrawerProps}
                 formProps={createFormProps}
                 saveButtonProps={createSaveButtonProps}
                 close={handleCreateClose}
             />
             <EditVehicle
+               handleBradeState={handleBradeState}
+               brandState={brandState}
                 close={handleClose}
                 drawerProps={editDrawerProps}
                 formProps={editFormProps}

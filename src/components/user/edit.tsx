@@ -224,7 +224,7 @@ export const EditUser: React.FC<EditUserProps> = ({
 
                             <Upload.Dragger
                                 name="files"
-                                action={`${apiUrl}/upload?token=test01`}
+                                action={`${apiUrl}/upload?token=${localStorage.getItem('Token')}`}
 
                                 listType="picture"
                                 maxCount={1}

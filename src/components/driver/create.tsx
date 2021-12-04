@@ -5,7 +5,7 @@ import {
     Form,
     FormProps,
     Input,
-    InputNumber,
+    InputNumber, DatePicker,
     Radio,
     Select,
     Space,
@@ -94,6 +94,12 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
         return isJpgOrPng && isLt2M;
     }
     const onFinish = async (data: any) => {
+        data.end_license_date = moment(data.end_license_date).format('YYYYMMDD')
+        data.expire_card_id = moment(data.expire_card_id).format('YYYYMMDD')
+        data.license_date = moment(data.license_date).format('YYYYMMDD')
+        // console.log(data);
+        // return null
+
         await create.mutate({
             resource: "drivers",
             values: { ...data, create_date: moment().format('YYYYMMDD') },
@@ -104,7 +110,7 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
             errorNotification: {
                 icon: <Icons.CloseCircleTwoTone twoToneColor="red" />,
                 message: 'เพิ่มผู้ขับรถไม่สำเร็จ',
-                description : 'กรุณาตรวจสอบชื่อผู้ใช้หรือเลขที่ใบขับขี่'
+                description: 'กรุณาตรวจสอบชื่อผู้ใช้หรือเลขที่ใบขับขี่'
             }
         }, {
             onSuccess: () => {
@@ -153,7 +159,7 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                                 listType="picture"
                                 className="avatar-uploader"
                                 showUploadList={false}
-                                action={`${apiUrl}/upload?token=test01`}
+                                action={`${apiUrl}/upload?token=${localStorage.getItem('Token')}`}
                                 beforeUpload={beforeUpload}
                                 onChange={handleChange}
 
@@ -167,7 +173,7 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                             {/* </div> */}
                             <Upload.Dragger
                                 name="files"
-                                action={`${apiUrl}/upload?token=test01`}
+                                action={`${apiUrl}/upload?token=${localStorage.getItem('Token')}`}
                                 listType="picture"
                                 maxCount={1}
                                 accept=".png"
@@ -210,6 +216,40 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                         ]}
                     >
                         <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label={t("เลขบัตรประชาชน")}
+                        name="card_id"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label={t("ที่อยู่ตามทะเบียนบ้าน")}
+                        name="home_address"
+                        rules={[
+                            {
+                                required: true,
+                                type: "string",
+                            },
+                        ]}
+                    >
+                        <Input.TextArea rows={3} />
+                    </Form.Item>
+                    <Form.Item
+                        label={t("วันหมดอายุบัตรประชาชน")}
+                        name="expire_card_id"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                    >
+                        <DatePicker style={{ width: '100%' }} />
                     </Form.Item>
                     <Form.Item
                         label={t("ชื่อผู้ขับ")}
@@ -258,8 +298,70 @@ export const CreateDriver: React.FC<CreateDriverProps> = ({
                         <Input />
                     </Form.Item>
                     <Form.Item
+                        label={t("วันอนุญาติใบขับขี่")}
+                        name="license_date"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                    >
+                        <DatePicker style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item
+                        label={t("วันหมดอายุใบขับขี่")}
+                        name="end_license_date"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                    >
+                        <DatePicker style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item
+                        label={t("ที่อยู่ กทม. และปริมณฑล")}
+                        name="address"
+                        rules={[
+                            {
+                                required: true,
+                                type: "string",
+                            },
+                        ]}
+                    >
+                        <Input.TextArea rows={3} />
+                    </Form.Item>
+                    <Form.Item
+                        label={t("ละติจูด")}
+                        name="lat"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label={t("ลองจิจูด")}
+                        name="lon"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
                         label={t("สถานะ")}
                         name="status"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
                     >
                         <Radio.Group>
                             <Radio value={'approve'}>{t("อนุมัติ")}</Radio>
